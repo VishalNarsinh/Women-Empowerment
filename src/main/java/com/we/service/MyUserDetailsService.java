@@ -12,4 +12,8 @@ public interface MyUserDetailsService {
     User userDtoToUser(UserDto userDto);
 
     UserDto saveLearnerUser(RegisterRequest registerRequest);
+
+    void deleteUser(UserDto userDto);
+
+    UserDto updateLearnerUser(UserDto userDto);
 }
