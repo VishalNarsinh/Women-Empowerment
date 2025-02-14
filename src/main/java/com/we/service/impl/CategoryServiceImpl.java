@@ -41,6 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(CategoryDto categoryDto) {
-
+        Category category = categoryRepository.findById(categoryDto.getCategoryId()).orElseThrow(() -> new ResourceNotFound("Category", "id", categoryDto.getCategoryId()));
+        categoryRepository.delete(category);
     }
 }
