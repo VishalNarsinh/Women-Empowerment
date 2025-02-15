@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubCategoryDto {
-    private Long id;
+    private Long subCategoryId;
     private String name;
     private Long categoryId;
     private List<CourseDto> courses;

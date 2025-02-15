@@ -44,4 +44,9 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryDto.getCategoryId()).orElseThrow(() -> new ResourceNotFound("Category", "id", categoryDto.getCategoryId()));
         categoryRepository.delete(category);
     }
+
+    @Override
+    public CategoryDto findCategoryById(long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id",categoryId));
+        return categoryToDto(category);}
 }

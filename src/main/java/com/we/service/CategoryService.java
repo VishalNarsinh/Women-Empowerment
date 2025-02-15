@@ -15,4 +15,5 @@ public interface CategoryService {
 
     void deleteCategory(CategoryDto categoryDto);
 
+    CategoryDto findCategoryById(long categoryId);
 }
