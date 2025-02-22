@@ -71,17 +71,13 @@ public class VideoServiceImpl implements VideoService {
             log.info("Content Type {}",contentType);
             log.info("Path {}", path.toString());
             Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
-            Video build = Video.builder()
+            Video video = Video.builder()
                     .videoName(filename)
                     .videoUrl(path.toString())
                     .contentType(contentType)
                     .build();
-            VideoDto videoDto = videoToDto(build);
-            videoDto.setLessonId(lessonId);
-
-//            video.setLesson(lesson);
-//            Video save = videoRepository.save(video);
-            return videoDto;
+            Video save = videoRepository.save(video);
+            return videoToDto(save);
         } catch (Exception e) {
             log.info("{}", e.getMessage());
             throw new RuntimeException(e);

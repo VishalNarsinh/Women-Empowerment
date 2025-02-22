@@ -3,6 +3,8 @@ package com.we.controller;
 import com.we.dto.VideoDto;
 import com.we.model.Video;
 import com.we.service.VideoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -23,6 +25,7 @@ import java.nio.file.Paths;
 @RequestMapping("/api/v1/video")
 public class VideoController {
 
+    private static final Logger log = LoggerFactory.getLogger(VideoController.class);
     private final VideoService videoService;
 
     public VideoController(VideoService videoService) {
@@ -78,19 +81,24 @@ public class VideoController {
             rangeEnd = fileLength - 1;
         }
         long contentLength = rangeEnd - rangeStart + 1;
+        log.info("rangeStart {} rangeEnd {} fileLength {} contentLength {}",rangeStart,rangeEnd,fileLength,contentLength);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Range","bytes="+rangeStart+"-"+rangeEnd+"/"+fileLength);
+        httpHeaders.add("Content-Range","bytes "+rangeStart+"-"+rangeEnd+"/"+fileLength);
         httpHeaders.add("Cache-Control","no-cache, no-store, must-revalidate");
         httpHeaders.add("Pragma","no-cache");
         httpHeaders.add("Expires","0");
         httpHeaders.add("X-Content-Type-Options","nosniff");
         httpHeaders.setContentLength(contentLength);
-        InputStream inputStream = Files.newInputStream(path);
-        inputStream.skip(rangeStart);
-        return ResponseEntity
-                .status(HttpStatus.PARTIAL_CONTENT)
-                .headers(httpHeaders)
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(new InputStreamResource(inputStream));
+        try{
+            InputStream inputStream = Files.newInputStream(path);
+            inputStream.skip(rangeStart);
+            return ResponseEntity
+                    .status(HttpStatus.PARTIAL_CONTENT)
+                    .headers(httpHeaders)
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(new InputStreamResource(inputStream));
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 }
