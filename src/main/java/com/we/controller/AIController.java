@@ -25,7 +25,6 @@ public class AIController {
 
     @GetMapping(value = "/prompt", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> askAi(@RequestParam(name = "query", defaultValue = "How are you, How can you help me ?", required = false ) String prompt) {
-        log.info("prompt: {}", prompt);
         return aiService.askAi(prompt);
     }
 }

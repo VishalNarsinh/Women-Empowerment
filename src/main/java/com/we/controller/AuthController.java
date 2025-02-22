@@ -1,5 +1,6 @@
 package com.we.controller;
 
+import com.we.dto.LoginRequest;
 import com.we.dto.LoginResponse;
 import com.we.dto.RegisterRequest;
 import com.we.dto.UserDto;
@@ -34,16 +35,16 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
 
-    @PostMapping("/register-learner")
+    @PostMapping("/register")
     public ResponseEntity<?> registerLearner(@RequestBody RegisterRequest registerRequest) {
-        UserDto userDto = userDetailsService.saveLearnerUser(registerRequest);
+        UserDto userDto = userDetailsService.saveUser(registerRequest);
         return ResponseEntity.ok(userDto);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody RegisterRequest registerRequest) {
-        doAuthenticate(registerRequest.getEmail(), registerRequest.getPassword());
-        UserDetails userDetails = userDetailsService.loadUserByUsername(registerRequest.getEmail());
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        doAuthenticate(loginRequest.getEmail(), loginRequest.getPassword());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
         String token = jwtUtil.generateToken(userDetails);
         LoginResponse response = LoginResponse.builder().user(userDetailsService.userToUserDto((User) userDetails)).token(token).build();
         return ResponseEntity.ok(response);

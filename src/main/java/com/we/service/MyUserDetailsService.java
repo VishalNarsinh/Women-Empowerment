@@ -3,6 +3,7 @@ package com.we.service;
 import com.we.dto.RegisterRequest;
 import com.we.dto.UserDto;
 import com.we.model.User;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MyUserDetailsService {
     User registerRequestToUser(RegisterRequest registerRequest);
@@ -11,9 +12,9 @@ public interface MyUserDetailsService {
 
     User userDtoToUser(UserDto userDto);
 
-    UserDto saveLearnerUser(RegisterRequest registerRequest);
+    UserDto saveUser(RegisterRequest registerRequest);
 
-    void deleteUser(UserDto userDto);
+    void deleteUser(long userId);
 
-    UserDto updateLearnerUser(UserDto userDto);
+    UserDto updateLearnerUser(UserDto userDto, MultipartFile file);
 }

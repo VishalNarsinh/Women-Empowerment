@@ -17,10 +17,6 @@ public class Video {
     private long videoId;
     private String videoUrl;
     private String videoName;
-    private String videoDescription;
     private String contentType;
 
-    @OneToOne
-    @JoinColumn(name = "lesson_id",nullable = false)
-    private Lesson lesson;
 }

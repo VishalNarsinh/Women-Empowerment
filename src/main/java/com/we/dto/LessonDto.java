@@ -17,6 +17,7 @@ public class LessonDto {
     private String lessonName;
     private String lessonContent;
     private String imageUrl;
+    private String videoUrl;
     private Long courseId;
     private List<Comment> comments;
 }

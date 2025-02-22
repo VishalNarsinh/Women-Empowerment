@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -44,13 +45,24 @@ public class UserDetailsServiceImpl implements UserDetailsService,MyUserDetailsS
 
 
     @Override
-    public UserDto saveLearnerUser(RegisterRequest registerRequest){
+    public UserDto saveUser(RegisterRequest registerRequest){
         User user = registerRequestToUser(registerRequest);
-        user.setRole(Role.ROLE_LEARNER);
+        user.setRole(registerRequest.getRole());
         user.setEnabled(true);
         user.setPassword(bcryptPasswordEncoder.encode(user.getPassword()));
         User save = userRepository.save(user);
         return userToUserDto(save);
+    }
+
+    @Override
+    public void deleteUser(long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFound("User", "id", userId));
+        userRepository.delete(user);
+    }
+
+    @Override
+    public UserDto updateLearnerUser(UserDto userDto, MultipartFile file) {
+        return null;
     }
 
 
