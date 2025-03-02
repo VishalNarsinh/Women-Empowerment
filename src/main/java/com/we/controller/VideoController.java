@@ -1,12 +1,12 @@
 package com.we.controller;
 
 import com.we.dto.VideoDto;
-import com.we.model.Video;
 import com.we.service.VideoService;
+import com.we.utils.AppConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,11 +35,11 @@ public class VideoController {
     @PostMapping("/save")
     public ResponseEntity<?> uploadVideo(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "lessonId",defaultValue = "0",required = false) long lessonId
-            ) {
+            @RequestParam(value = "lessonId", defaultValue = "0", required = false) long lessonId
+    ) {
 
         VideoDto videoDto = videoService.saveVideo(file, lessonId);
-        
+
         return ResponseEntity.ok(videoDto);
     }
 
@@ -48,7 +48,7 @@ public class VideoController {
         VideoDto videoDto = videoService.getVideoByVideoId(videoId);
         String videoUrl = videoDto.getVideoUrl();
         String contentType = videoDto.getContentType();
-        if(contentType==null || contentType.isEmpty())
+        if (contentType == null || contentType.isEmpty())
             contentType = "application/octet-stream";
         Resource resource = new FileSystemResource(videoUrl);
         return ResponseEntity.
@@ -61,43 +61,49 @@ public class VideoController {
     @GetMapping("/stream/range/{videoId}")
     public ResponseEntity<?> getVideoRange(@PathVariable("videoId") long videoId,
                                            @RequestHeader(name = "range", required = false) String range) throws IOException {
-        if(range==null || range.isEmpty()){
+        if (range == null || range.isEmpty()) {
             return getVideo(videoId);
         }
         VideoDto videoDto = videoService.getVideoByVideoId(videoId);
         Path path = Paths.get(videoDto.getVideoUrl());
         Resource resource = new FileSystemResource(videoDto.getVideoUrl());
         String contentType = videoDto.getContentType();
-        if(contentType==null || contentType.isEmpty()){
+        if (contentType == null || contentType.isEmpty()) {
             contentType = "application/octet-stream";
         }
 
         long fileLength = path.toFile().length();
         String[] ranges = range.replace("bytes=", "").split("-");
         long rangeStart = Long.parseLong(ranges[0]);
-        long rangeEnd = (ranges.length > 1) ? Long.parseLong(ranges[1]) : fileLength - 1;
 
+        long rangeEnd = rangeStart + AppConstants.CHUNK_SIZE - 1;
         if (rangeEnd > fileLength - 1) {
             rangeEnd = fileLength - 1;
         }
-        long contentLength = rangeEnd - rangeStart + 1;
-        log.info("rangeStart {} rangeEnd {} fileLength {} contentLength {}",rangeStart,rangeEnd,fileLength,contentLength);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-Range","bytes "+rangeStart+"-"+rangeEnd+"/"+fileLength);
-        httpHeaders.add("Cache-Control","no-cache, no-store, must-revalidate");
-        httpHeaders.add("Pragma","no-cache");
-        httpHeaders.add("Expires","0");
-        httpHeaders.add("X-Content-Type-Options","nosniff");
-        httpHeaders.setContentLength(contentLength);
-        try{
+
+        try {
             InputStream inputStream = Files.newInputStream(path);
             inputStream.skip(rangeStart);
+            long contentLength = rangeEnd - rangeStart + 1;
+            log.info("rangeStart {} rangeEnd {} fileLength {} contentLength {}", rangeStart, rangeEnd, fileLength, contentLength);
+
+
+            byte[] data = new byte[(int) contentLength];
+            int read = inputStream.read(data, 0, data.length);
+            log.info("read number of bytes{}", read);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Content-Range", "bytes " + rangeStart + "-" + rangeEnd + "/" + fileLength);
+            httpHeaders.add("Cache-Control", "no-cache, no-store, must-revalidate");
+            httpHeaders.add("Pragma", "no-cache");
+            httpHeaders.add("Expires", "0");
+            httpHeaders.add("X-Content-Type-Options", "nosniff");
+            httpHeaders.setContentLength(contentLength);
             return ResponseEntity
                     .status(HttpStatus.PARTIAL_CONTENT)
                     .headers(httpHeaders)
                     .contentType(MediaType.parseMediaType(contentType))
-                    .body(new InputStreamResource(inputStream));
-        }catch (Exception e){
+                    .body(new ByteArrayResource(data));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

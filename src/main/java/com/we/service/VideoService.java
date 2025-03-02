@@ -4,6 +4,8 @@ import com.we.dto.VideoDto;
 import com.we.model.Video;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 public interface VideoService {
 
     VideoDto videoToDto(Video video);
@@ -18,4 +20,5 @@ public interface VideoService {
 
     VideoDto updateVideo(VideoDto videoDto, MultipartFile file, long videoId, long lessonId);
 
+    long processVideo(long videoId) throws IOException, InterruptedException;
 }
