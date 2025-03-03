@@ -18,5 +18,6 @@ public class Video {
     private String videoUrl;
     private String videoName;
     private String contentType;
-
+    @Column(nullable = false)
+    private String processingStatus = "PENDING";
 }

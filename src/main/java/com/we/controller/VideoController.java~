@@ -130,7 +130,7 @@ public class VideoController {
     @GetMapping("/master/{videoId}/{segment}")
     public ResponseEntity<Resource> serveSegments(@PathVariable String videoId, @PathVariable String segment) {
 
-        Path path = Paths.get(HLS_DIR,videoId, segment);
+        Path path = Paths.get(HLS_DIR,videoId, segment+".ts");
         log.info(
                 "Path {}",
                 path

@@ -13,4 +13,5 @@ public class VideoDto {
     private String videoName;
     private String contentType;
     private long lessonId;
+    private String processingStatus;
 }
