@@ -46,7 +46,13 @@ public class SecurityConfig {
                                 "/api/v1/error/**",
                                 "/api/v1/auth/**",
                                 "/api/v1/ai/**",
-                                "/api/v1/video/**").permitAll()
+                                "/api/v1/video/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
