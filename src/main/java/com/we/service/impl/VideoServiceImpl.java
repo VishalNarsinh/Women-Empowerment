@@ -132,10 +132,11 @@ public class VideoServiceImpl implements VideoService {
             process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                video.setProcessingStatus("COMPLETED");  // ✅ Set as COMPLETED
+                video.setProcessingStatus("COMPLETED");
             } else {
-                video.setProcessingStatus("FAILED");  // ✅ Set as FAILED
+                video.setProcessingStatus("FAILED");
             }
+            videoRepository.save(video);
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupt status
             if (e.getMessage().contains("Invalid data found") || e.getMessage().contains("unsupported codec")) {
@@ -148,6 +149,7 @@ public class VideoServiceImpl implements VideoService {
                 videoRepository.save(video);
             }
             throw new RuntimeException("Error while processing video", e);
+            //this is Test
         } finally {
             if (process != null) {
                 process.getInputStream().close();
