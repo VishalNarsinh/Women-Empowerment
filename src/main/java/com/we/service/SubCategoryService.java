@@ -15,7 +15,7 @@ public interface SubCategoryService {
 
     SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto,long categoryId);
     SubCategoryDto updateSubCategory(SubCategoryDto subCategoryDto,long subCategoryId,long categoryId);
-    void deleteSubCategory(SubCategoryDto subCategoryDto);
+    void deleteSubCategory(long subCategoryId);
 
     List<SubCategoryDto> findSubCategoriesByCategoryId(CourseDto courseDto);
 }

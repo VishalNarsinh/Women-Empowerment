@@ -55,8 +55,8 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     }
 
     @Override
-    public void deleteSubCategory(SubCategoryDto subCategoryDto) {
-        SubCategory subCategory = subCategoryRepository.findById(subCategoryDto.getSubCategoryId()).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryDto.getSubCategoryId()));
+    public void deleteSubCategory(long subCategoryId) {
+        SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryDto.getSubCategoryId()));
         subCategoryRepository.delete(subCategory);
     }
 
