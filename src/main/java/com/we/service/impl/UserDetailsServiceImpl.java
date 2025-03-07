@@ -1,11 +1,11 @@
-package com.we.service;
+package com.we.service.impl;
 
 import com.we.dto.RegisterRequest;
 import com.we.dto.UserDto;
 import com.we.exception.ResourceNotFound;
-import com.we.model.Role;
 import com.we.model.User;
 import com.we.repository.UserRepository;
+import com.we.service.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService,MyUserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService, MyUserDetailsService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
