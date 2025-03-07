@@ -149,7 +149,6 @@ public class VideoServiceImpl implements VideoService {
                 videoRepository.save(video);
             }
             throw new RuntimeException("Error while processing video", e);
-            //this is Test
         } finally {
             if (process != null) {
                 process.getInputStream().close();

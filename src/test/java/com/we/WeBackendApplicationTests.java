@@ -16,9 +16,7 @@ class WeBackendApplicationTests {
 	void contextLoads() {
         try {
             videoService.processVideo(2);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

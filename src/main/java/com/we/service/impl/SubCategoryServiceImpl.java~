@@ -61,8 +61,8 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     }
 
     @Override
-    public List<SubCategoryDto> findSubCategoriesByCategoryId(long categoryId) {
-        List<SubCategory> byCategoryCategoryId = subCategoryRepository.findByCategoryCategoryId(categoryId);
+    public List<SubCategoryDto> findSubCategoriesByCategoryId(CourseDto courseDto) {
+        List<SubCategory> byCategoryCategoryId = subCategoryRepository.findByCategoryCategoryId(courseDto.getSubCategoryId());
         return byCategoryCategoryId.stream().map(this::subCategoryToDto).toList();
     }
 }

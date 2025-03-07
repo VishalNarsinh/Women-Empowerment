@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/subcategory")
+@RequestMapping("/api/v1/subcategories")
 @RequiredArgsConstructor
 public class SubCategoryController {
     private final SubCategoryService subCategoryService;
@@ -19,20 +19,25 @@ public class SubCategoryController {
         return ResponseEntity.ok(subCategoryService.findSubCategoryBySubCategoryId(subCategoryId));
     }
 
-    @PostMapping("/save/{categoryId}")
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<?> getSubCategoriesByCategory(@PathVariable long categoryId) {
+        return ResponseEntity.ok(subCategoryService.findSubCategoriesByCategoryId(categoryId));
+    }
+
+    @PostMapping("/{categoryId}")
     public ResponseEntity<?> saveSubCategory(@RequestBody SubCategoryDto subCategoryDto,@PathVariable long categoryId) {
         return ResponseEntity.ok(subCategoryService.saveSubCategory(subCategoryDto, categoryId));
     }
 
-    @PutMapping("/update/{subCategoryId}/{categoryId}")
+    @PutMapping("/{subCategoryId}/category/{categoryId}")
     public ResponseEntity<?> updateSubCategory(@RequestBody SubCategoryDto subCategoryDto,@PathVariable long subCategoryId,@PathVariable long categoryId) {
         return ResponseEntity.ok(subCategoryService.updateSubCategory(subCategoryDto, subCategoryId, categoryId));
     }
 
-    @DeleteMapping("/delete/{subCategoryId}")
+    @DeleteMapping("/{subCategoryId}")
     public ResponseEntity<?> deleteSubCategory(@PathVariable long subCategoryId) {
         subCategoryService.deleteSubCategory(subCategoryId);
-        return ResponseEntity.ok(CustomMessage.builder().message("SubCategory deleted successfully").status("success").build());
+        return ResponseEntity.ok(CustomMessage.builder().message("Subcategory deleted successfully").status("success").build());
     }
     
 }
