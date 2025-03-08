@@ -17,8 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class BeanConfig {
 
 
-
-
     @Bean
     ModelMapper modelMapper() {
         return new ModelMapper();
@@ -26,7 +24,7 @@ public class BeanConfig {
 
 
     @Bean
-    PasswordEncoder bcryptPasswordEncoder(){
+    PasswordEncoder bcryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -35,11 +33,13 @@ public class BeanConfig {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(bcryptPasswordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        return  daoAuthenticationProvider;
+        return daoAuthenticationProvider;
     }
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
         return builder.getAuthenticationManager();
     }
+
+
 }

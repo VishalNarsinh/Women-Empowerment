@@ -1,7 +1,6 @@
 package com.we.service.impl;
 
 import com.we.dto.CategoryDto;
-import com.we.dto.CourseDto;
 import com.we.dto.SubCategoryDto;
 import com.we.exception.ResourceNotFound;
 import com.we.model.SubCategory;
@@ -13,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,17 +36,17 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     }
 
     @Override
-    public SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto,long categoryId) {
+    public SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto) {
         SubCategory subCategory = dtoToSubCategory(subCategoryDto);
-        CategoryDto categoryById = categoryService.findCategoryById(categoryId);
+        CategoryDto categoryById = categoryService.findCategoryByCategoryId(subCategoryDto.getCategoryId());
         subCategory.setCategory(categoryService.dtoToCategory(categoryById));
         return subCategoryToDto(subCategoryRepository.save(subCategory));
     }
 
     @Override
-    public SubCategoryDto updateSubCategory(SubCategoryDto subCategoryDto,long subCategoryId,long categoryId) {
+    public SubCategoryDto updateSubCategory(SubCategoryDto subCategoryDto,long subCategoryId) {
         SubCategory subCategoryDB = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId));
-        CategoryDto categoryById = categoryService.findCategoryById(categoryId);
+        CategoryDto categoryById = categoryService.findCategoryByCategoryId(subCategoryDto.getCategoryId());
         subCategoryDB.setName(subCategoryDto.getName());
         subCategoryDB.setCategory(categoryService.dtoToCategory(categoryById));
         return subCategoryToDto(subCategoryRepository.save(subCategoryDB));

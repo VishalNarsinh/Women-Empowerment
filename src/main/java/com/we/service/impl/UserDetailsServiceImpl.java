@@ -3,6 +3,7 @@ package com.we.service.impl;
 import com.we.dto.RegisterRequest;
 import com.we.dto.UserDto;
 import com.we.exception.ResourceNotFound;
+import com.we.model.Role;
 import com.we.model.User;
 import com.we.repository.UserRepository;
 import com.we.service.MyUserDetailsService;
@@ -47,7 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, MyUserDetails
     @Override
     public UserDto saveUser(RegisterRequest registerRequest){
         User user = registerRequestToUser(registerRequest);
-        user.setRole(registerRequest.getRole());
+        user.setRole(Role.ROLE_USER);
         user.setEnabled(true);
         user.setPassword(bcryptPasswordEncoder.encode(user.getPassword()));
         User save = userRepository.save(user);

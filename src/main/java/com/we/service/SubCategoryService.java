@@ -13,8 +13,8 @@ public interface SubCategoryService {
 
     SubCategoryDto findSubCategoryBySubCategoryId(long subCategoryId);
 
-    SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto,long categoryId);
-    SubCategoryDto updateSubCategory(SubCategoryDto subCategoryDto,long subCategoryId,long categoryId);
+    SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto);
+    SubCategoryDto updateSubCategory(SubCategoryDto subCategoryDto,long subCategoryId);
     void deleteSubCategory(long subCategoryId);
 
     List<SubCategoryDto> findSubCategoriesByCategoryId(long categoryId);

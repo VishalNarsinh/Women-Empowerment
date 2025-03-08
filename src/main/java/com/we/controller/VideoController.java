@@ -24,7 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/api/v1/video")
+@RequestMapping("/api/v1/videos")
 public class VideoController {
 
     private static final Logger log = LoggerFactory.getLogger(VideoController.class);
@@ -42,10 +42,7 @@ public class VideoController {
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "lessonId", defaultValue = "0", required = false) long lessonId
     ) {
-
-        VideoDto videoDto = videoService.saveVideo(file, lessonId);
-
-        return ResponseEntity.ok(videoDto);
+        return ResponseEntity.ok(videoService.saveVideo(file, lessonId));
     }
 
     @GetMapping("/stream/{videoId}")

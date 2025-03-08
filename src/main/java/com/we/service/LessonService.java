@@ -1,8 +1,8 @@
 package com.we.service;
 
-import com.we.dto.CourseDto;
 import com.we.dto.LessonDto;
 import com.we.model.Lesson;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,11 +12,12 @@ public interface LessonService {
 
     Lesson dtoToLesson(LessonDto lessonDto);
 
-    LessonDto saveLesson(LessonDto lessonDto);
+    LessonDto saveLesson(LessonDto lessonDto, MultipartFile file);
 
-    LessonDto updateLesson(LessonDto lessonDto);
+    LessonDto updateLesson(LessonDto lessonDto,long lessonId,MultipartFile file);
 
-    void deleteLesson(LessonDto lessonDto);
+    void deleteLesson(long lessonId);
 
-    List<LessonDto> findLessonsByCourseId(CourseDto courseDto);
+    LessonDto findLessonById(long lessonId);
+    List<LessonDto> findLessonsByCourseId(long courseId);
 }

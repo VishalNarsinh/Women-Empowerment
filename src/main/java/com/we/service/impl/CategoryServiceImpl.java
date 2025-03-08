@@ -4,7 +4,6 @@ import com.we.dto.CategoryDto;
 import com.we.exception.ResourceNotFound;
 import com.we.model.Category;
 import com.we.repository.CategoryRepository;
-import com.we.repository.CourseRepository;
 import com.we.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -40,13 +39,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(categoryDto.getCategoryId()).orElseThrow(() -> new ResourceNotFound("Category", "id", categoryDto.getCategoryId()));
+    public void deleteCategory(long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id", categoryId));
         categoryRepository.delete(category);
     }
 
     @Override
-    public CategoryDto findCategoryById(long categoryId) {
+    public CategoryDto findCategoryByCategoryId(long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id",categoryId));
         return categoryToDto(category);}
 }

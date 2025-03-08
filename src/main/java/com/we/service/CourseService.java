@@ -3,6 +3,7 @@ package com.we.service;
 import com.we.dto.CourseDto;
 import com.we.dto.SubCategoryDto;
 import com.we.model.Course;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,11 +13,11 @@ public interface CourseService {
 
     Course dtoToCourse(CourseDto courseDto);
 
-    CourseDto saveCourse(CourseDto courseDto);
+    CourseDto saveCourse(CourseDto courseDto,MultipartFile file);
 
-    void deleteCourse(CourseDto courseDto);
+    void deleteCourse(long courseId);
 
-    CourseDto updateCourse(CourseDto courseDto);
+    CourseDto updateCourse(CourseDto courseDto,long courseId, MultipartFile file);
 
     List<CourseDto> findCourseBySubCategoryId(SubCategoryDto subCategoryDto);
 

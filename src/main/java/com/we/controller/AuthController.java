@@ -33,7 +33,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerLearner(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
         UserDto userDto = userDetailsService.saveUser(registerRequest);
         return ResponseEntity.ok(userDto);
     }

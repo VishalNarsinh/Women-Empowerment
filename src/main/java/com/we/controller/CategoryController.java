@@ -8,28 +8,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/category")
+@RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
-    @PostMapping("/save")
+    @PostMapping("/")
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) {
         return ResponseEntity.ok(categoryService.saveCategory(categoryDto));
     }
 
-    @GetMapping("/{subCategoryId}")
-    public ResponseEntity<?> getSubCategory(@PathVariable long subCategoryId) {
-        return ResponseEntity.ok(categoryService.findCategoryById(subCategoryId));
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<?> getCategory(@PathVariable long categoryId) {
+        return ResponseEntity.ok(categoryService.findCategoryByCategoryId(categoryId));
     }
 
-    @PutMapping("/update/{categoryId}")
+    @PutMapping("/{categoryId}")
     public ResponseEntity<?> updateCategory(@RequestBody CategoryDto categoryDto,@PathVariable long categoryId) {
         return ResponseEntity.ok(categoryService.updateCategory(categoryDto,categoryId));
     }
 
-    @DeleteMapping("/delete/{categoryId}")
+    @DeleteMapping("/{categoryId}")
     public ResponseEntity<?> deleteCategory(@PathVariable long categoryId) {
-        categoryService.deleteCategory(categoryService.findCategoryById(categoryId));
+        categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok(CustomMessage.builder().message("Category deleted successfully").status("success").build());
     }
 }
