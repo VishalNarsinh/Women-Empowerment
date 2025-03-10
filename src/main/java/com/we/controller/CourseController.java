@@ -30,8 +30,8 @@ public class CourseController {
         return ResponseEntity.ok(map);
     }
 
-    @GetMapping("/hi")
-    public ResponseEntity<java.lang.String> get() {
-        return ResponseEntity.ok("hello");
+    @GetMapping("/{courseId}")
+    public ResponseEntity<?> getCourseById(@PathVariable long courseId) {
+        return ResponseEntity.ok(courseService.findCourseByCourseId(courseId));
     }
 }

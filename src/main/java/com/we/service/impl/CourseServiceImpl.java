@@ -56,4 +56,9 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseDto> findCourseBySubCategoryId(SubCategoryDto subCategoryDto) {
         return List.of();
     }
+
+    @Override
+    public CourseDto findCourseByCourseId(long courseId) {
+        return courseToDto(courseRepository.findById(courseId).orElseThrow(()->new ResourceNotFound("Course","id",courseId)));
+    }
 }
