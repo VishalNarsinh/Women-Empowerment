@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -48,4 +50,9 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto findCategoryByCategoryId(long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id",categoryId));
         return categoryToDto(category);}
+
+    @Override
+    public List<CategoryDto> findAll() {
+        return categoryRepository.findAll().stream().map(this::categoryToDto).toList();
+    }
 }

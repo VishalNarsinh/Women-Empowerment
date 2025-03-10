@@ -34,4 +34,9 @@ public class CourseController {
     public ResponseEntity<?> getCourseById(@PathVariable long courseId) {
         return ResponseEntity.ok(courseService.findCourseByCourseId(courseId));
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> get() {
+        return ResponseEntity.ok(courseService.findAll());
+    }
 }

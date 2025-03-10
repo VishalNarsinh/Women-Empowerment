@@ -1,5 +1,6 @@
 package com.we.service;
 
+import com.we.dto.CategoryDto;
 import com.we.dto.CourseDto;
 import com.we.dto.SubCategoryDto;
 import com.we.model.Course;
@@ -22,4 +23,6 @@ public interface CourseService {
     List<CourseDto> findCourseBySubCategoryId(SubCategoryDto subCategoryDto);
 
     CourseDto findCourseByCourseId(long courseId);
+
+    List<CategoryDto> findAll();
 }

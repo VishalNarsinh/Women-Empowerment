@@ -32,4 +32,9 @@ public class CategoryController {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok(CustomMessage.builder().message("Category deleted successfully").status("success").build());
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(categoryService.findAll());
+    }
 }

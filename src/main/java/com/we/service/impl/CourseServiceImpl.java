@@ -1,5 +1,6 @@
 package com.we.service.impl;
 
+import com.we.dto.CategoryDto;
 import com.we.dto.CourseDto;
 import com.we.dto.SubCategoryDto;
 import com.we.exception.ResourceNotFound;
@@ -60,5 +61,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto findCourseByCourseId(long courseId) {
         return courseToDto(courseRepository.findById(courseId).orElseThrow(()->new ResourceNotFound("Course","id",courseId)));
+    }
+
+    @Override
+    public List<CategoryDto> findAll() {
+        return List.of();
     }
 }
