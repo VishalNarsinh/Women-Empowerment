@@ -1,10 +1,14 @@
 package com.we.config;
 
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,6 +16,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.io.IOException;
 
 @Configuration
 public class BeanConfig {
@@ -41,5 +47,12 @@ public class BeanConfig {
         return builder.getAuthenticationManager();
     }
 
+    @Bean
+    Storage storage() throws IOException {
+        return StorageOptions.newBuilder()
+                .setCredentials(ServiceAccountCredentials.fromStream(new ClassPathResource("gcp-key.json").getInputStream()))
+                .build()
+                .getService();
+    }
 
 }

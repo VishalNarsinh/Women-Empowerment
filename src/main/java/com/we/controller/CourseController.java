@@ -1,6 +1,7 @@
 package com.we.controller;
 
 import com.we.dto.CourseDto;
+import com.we.dto.CustomMessage;
 import com.we.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -38,5 +39,18 @@ public class CourseController {
     @GetMapping("/all")
     public ResponseEntity<?> get() {
         return ResponseEntity.ok(courseService.findAll());
+    }
+
+    @PutMapping(value = "/{courseId}",consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateCourse(@PathVariable long courseId, @RequestPart("course")CourseDto courseDto,@RequestPart("file") MultipartFile file) {
+//        courseService
+        CourseDto updatedCourse = courseService.updateCourse(courseDto, courseId, file);
+        return ResponseEntity.ok("");
+    }
+
+    @DeleteMapping("/{courseId}")
+    public ResponseEntity<?> deleteCourse(@PathVariable long courseId) {
+        courseService.deleteCourse(courseId);
+        return ResponseEntity.ok(CustomMessage.builder().message("Course deleted successfully").status("success").build());
     }
 }

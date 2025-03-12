@@ -29,12 +29,15 @@ public class Course {
     private String courseDescription;
 
 
-    private String imageUrl;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
 
     @ManyToOne
     @JoinColumn(name = "sub_category_id")
     private SubCategory subCategory;
+
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Lesson> lessons = new ArrayList<>();

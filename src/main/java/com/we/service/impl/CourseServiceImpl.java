@@ -1,6 +1,5 @@
 package com.we.service.impl;
 
-import com.we.dto.CategoryDto;
 import com.we.dto.CourseDto;
 import com.we.dto.SubCategoryDto;
 import com.we.exception.ResourceNotFound;
@@ -38,7 +37,7 @@ public class CourseServiceImpl implements CourseService {
         SubCategory subCategory = subCategoryService.dtoToSubCategory(subCategoryService.findSubCategoryBySubCategoryId(courseDto.getSubCategoryId()));
         Course course = dtoToCourse(courseDto);
         course.setSubCategory(subCategory);
-        course.setImageUrl(file.getOriginalFilename());
+//        course.setImageUrl(file.getOriginalFilename());
         return courseToDto(courseRepository.save(course));
     }
 
@@ -64,7 +63,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CategoryDto> findAll() {
-        return List.of();
+    public List<CourseDto> findAll() {
+        return courseRepository.findAll().stream().map(this::courseToDto).toList();
     }
 }

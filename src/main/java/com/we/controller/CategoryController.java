@@ -5,6 +5,7 @@ import com.we.dto.CustomMessage;
 import com.we.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +29,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{categoryId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteCategory(@PathVariable long categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok(CustomMessage.builder().message("Category deleted successfully").status("success").build());

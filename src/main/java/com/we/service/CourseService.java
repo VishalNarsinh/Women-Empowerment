@@ -24,5 +24,5 @@ public interface CourseService {
 
     CourseDto findCourseByCourseId(long courseId);
 
-    List<CategoryDto> findAll();
+    List<CourseDto> findAll();
 }
