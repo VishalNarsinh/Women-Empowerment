@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,7 @@ public class VideoServiceImpl implements VideoService {
         try {
 
 //            Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFound("Lesson", "id", lessonId));
-            String filename = file.getOriginalFilename();
+            String filename = UUID.randomUUID() +"-" + file.getOriginalFilename();
             String contentType = file.getContentType();
             InputStream inputStream = file.getInputStream();
             String cleanFileName = StringUtils.cleanPath(filename);
