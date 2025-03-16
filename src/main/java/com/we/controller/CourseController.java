@@ -1,5 +1,6 @@
 package com.we.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.we.dto.CourseDto;
 import com.we.dto.CustomMessage;
 import com.we.service.CourseService;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -19,16 +20,19 @@ public class CourseController {
 
     private static final Logger log = LoggerFactory.getLogger(CourseController.class);
     private final CourseService courseService;
+    private final ObjectMapper objectMapper;
 
-    @PostMapping(value = "/",consumes = {"multipart/form-data"})
-    public ResponseEntity<?> saveCourse(@RequestPart("course")CourseDto courseDto,@RequestPart("file") MultipartFile file) {
-//        courseService
-        log.info("{}", courseDto);
-        log.info("{}", file.getOriginalFilename());
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("file",file.getOriginalFilename());
-        map.put("course", courseDto);
-        return ResponseEntity.ok(map);
+//    @PostMapping(value = "/",consumes = {"multipart/form-data"})
+//    public ResponseEntity<?> saveCourse(@RequestPart("course")CourseDto courseDto,@RequestPart("file") MultipartFile file) throws  IOException {
+//        return ResponseEntity.ok(courseService.saveCourse(courseDto,file));
+//    }
+
+
+    @PostMapping(value = "/")
+    public ResponseEntity<?> saveCourse(@RequestParam("course")String courseDtoData,@RequestParam("file") MultipartFile file) throws IOException {
+//        ObjectMapper
+        CourseDto courseDto = objectMapper.readValue(courseDtoData, CourseDto.class);
+        return ResponseEntity.ok(courseService.saveCourse(courseDto,file));
     }
 
     @GetMapping("/{courseId}")
@@ -43,9 +47,7 @@ public class CourseController {
 
     @PutMapping(value = "/{courseId}",consumes = {"multipart/form-data"})
     public ResponseEntity<?> updateCourse(@PathVariable long courseId, @RequestPart("course")CourseDto courseDto,@RequestPart("file") MultipartFile file) {
-//        courseService
-        CourseDto updatedCourse = courseService.updateCourse(courseDto, courseId, file);
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(courseService.updateCourse(courseDto, courseId, file));
     }
 
     @DeleteMapping("/{courseId}")

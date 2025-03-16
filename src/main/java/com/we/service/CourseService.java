@@ -6,6 +6,7 @@ import com.we.dto.SubCategoryDto;
 import com.we.model.Course;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CourseService {
@@ -14,7 +15,7 @@ public interface CourseService {
 
     Course dtoToCourse(CourseDto courseDto);
 
-    CourseDto saveCourse(CourseDto courseDto,MultipartFile file);
+    CourseDto saveCourse(CourseDto courseDto,MultipartFile file) throws IOException;
 
     void deleteCourse(long courseId);
 

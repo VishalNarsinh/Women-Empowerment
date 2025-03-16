@@ -6,6 +6,7 @@ import com.we.exception.ResourceNotFound;
 import com.we.model.SubCategory;
 import com.we.repository.SubCategoryRepository;
 import com.we.service.CategoryService;
+import com.we.service.CourseService;
 import com.we.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,6 +20,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     private final ModelMapper modelMapper;
     private final CategoryService categoryService;
     private final SubCategoryRepository subCategoryRepository;
+    private final CourseService courseService;
 
     @Override
     public SubCategoryDto subCategoryToDto(SubCategory subCategory) {
@@ -32,7 +34,14 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
     @Override
     public SubCategoryDto findSubCategoryBySubCategoryId(long subCategoryId) {
-        return subCategoryToDto(subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId)));
+        SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId));
+        return SubCategoryDto.builder()
+                .name(subCategory.getName())
+                .categoryId(subCategory.getCategory().getCategoryId())
+                .courses(subCategory.getCourses().stream().map(courseService::courseToDto).toList())
+                .build();
+
+//        return subCategoryToDto(subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId)));
     }
 
     @Override

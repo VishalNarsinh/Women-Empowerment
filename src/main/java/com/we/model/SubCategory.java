@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,6 +28,6 @@ public class SubCategory {
     @JoinColumn(name = "category_id",nullable = false)
     private Category category;
 
-    @OneToMany(mappedBy = "subCategory", cascade = CascadeType.ALL)
-    private List<Course> courses = new LinkedList<>();
+    @OneToMany(mappedBy = "subCategory", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Course> courses = new ArrayList<>();
 }
