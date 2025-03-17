@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -28,7 +27,9 @@ public class Lesson {
 
     private String lessonContent;
 
-    private String imageUrl;
+    @OneToOne
+    @JoinColumn(name = "image_id",nullable = false)
+    private Image image;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "video_id",nullable = false)

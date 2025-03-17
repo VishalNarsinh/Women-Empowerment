@@ -1,13 +1,9 @@
 package com.we.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -16,6 +12,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
+@Builder
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +25,8 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     List<SubCategory> subCategories = new ArrayList<>();
+
+    public Category(long categoryId) {
+        this.categoryId = categoryId;
+    }
 }

@@ -2,6 +2,7 @@ package com.we.service.impl;
 
 import com.we.dto.CategoryDto;
 import com.we.exception.ResourceNotFound;
+import com.we.mapper.CategoryMapper;
 import com.we.model.Category;
 import com.we.repository.CategoryRepository;
 import com.we.service.CategoryService;
@@ -16,6 +17,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public Category dtoToCategory(CategoryDto categoryDto) {
@@ -30,14 +32,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto saveCategory(CategoryDto categoryDto) {
         Category category = modelMapper.map(categoryDto, Category.class);
-        return categoryToDto(categoryRepository.save(category));
+        return categoryMapper.toDto(categoryRepository.save(category));
     }
 
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto,long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id", categoryDto.getCategoryId()));
         category.setName(categoryDto.getName());
-        return categoryToDto(categoryRepository.save(category));
+        return categoryMapper.toDto(categoryRepository.save(category));
     }
 
     @Override
@@ -49,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto findCategoryByCategoryId(long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id",categoryId));
-        return categoryToDto(category);}
+        return categoryMapper.toDto(category);}
 
     @Override
     public List<CategoryDto> findAll() {
