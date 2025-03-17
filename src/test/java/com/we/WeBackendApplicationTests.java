@@ -1,6 +1,5 @@
 package com.we;
 
-import com.we.dto.SubCategoryDto;
 import com.we.service.SubCategoryService;
 import com.we.service.VideoService;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,6 @@ class WeBackendApplicationTests {
 
     @Test
 	void contextLoads() {
-        SubCategoryDto subCategoryDto = subCategoryService.findSubCategoryBySubCategoryId(2);
-        log.info("subCategoryDto : {}",subCategoryDto);
     }
 
 }

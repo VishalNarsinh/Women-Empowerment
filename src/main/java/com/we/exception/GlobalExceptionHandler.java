@@ -2,11 +2,12 @@ package com.we.exception;
 
 
 import com.we.dto.ErrorResponseDto;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,6 +44,37 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
     }
+
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> dataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest webRequest) {
+        String errorMessage = "Data integrity violation";
+
+        Throwable cause = ex.getCause();
+        if (cause instanceof ConstraintViolationException constraintViolationException) {
+            String sqlMessage = constraintViolationException.getSQLException().getMessage();
+
+            // Better way: check specific constraint name
+            String constraintName = constraintViolationException.getConstraintName();
+            if (constraintName != null && constraintName.contains("UK6dotkott2kjsp8vw4d0m25fb7")) {
+                errorMessage = "Email already exists. Please use a different email.";
+            } else if (sqlMessage != null && sqlMessage.contains("Duplicate entry")) {
+                errorMessage = "Duplicate value detected for a unique field.";
+            } else {
+                errorMessage = sqlMessage;
+            }
+        }
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.CONFLICT,
+                HttpStatus.CONFLICT.value(),
+                errorMessage,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
+
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> globalExceptionHandler(Exception ex, WebRequest webRequest) {
