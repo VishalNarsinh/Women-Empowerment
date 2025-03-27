@@ -1,16 +1,20 @@
 package com.we.controller;
 
-import com.we.dto.LoginRequest;
-import com.we.dto.LoginResponse;
-import com.we.dto.RegisterRequest;
-import com.we.dto.UserDto;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.we.dto.*;
 import com.we.exception.ApiException;
+import com.we.model.Role;
 import com.we.model.User;
+import com.we.repository.UserRepository;
 import com.we.security.jwt.JwtUtil;
 import com.we.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -30,7 +36,10 @@ public class AuthController {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
+    @Value("${google.client.id}")
+    private String CLIENT_ID;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
@@ -59,5 +68,52 @@ public class AuthController {
 
     }
 
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) {
+        try {
+            // Verify Google ID Token
+//            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+//                    new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+//                    .setAudience(Collections.singletonList(CLIENT_ID))
+//                    .build();
+
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                    .setAudience(Collections.singletonList(CLIENT_ID))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(request.getIdToken());
+            if (idToken == null) {
+                return ResponseEntity.badRequest().body("Invalid Google token");
+            }
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+
+            // Check if user exists
+            User user = userRepository.findByEmail(email).get();
+            if (user == null) {
+                // New user → Register automatically with default role
+                user = new User();
+                user.setEmail(email);
+                user.setFirstName(name);
+                user.setEnabled(true);
+                user.setRole(Role.ROLE_USER);
+                user.setPassword(null); // No password for Google login
+                user = userRepository.save(user);
+            }
+
+            String jwtToken = jwtUtil.generateToken(userDetailsService.loadUserByUsername(email));
+
+            return ResponseEntity.ok(LoginResponse.builder()
+                    .user(userDetailsService.userToUserDto(user))
+                    .token(jwtToken)
+                    .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Google authentication failed: " + e.getMessage());
+        }
+    }
 
 }

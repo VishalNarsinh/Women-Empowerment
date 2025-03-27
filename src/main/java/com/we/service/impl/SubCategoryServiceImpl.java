@@ -3,10 +3,10 @@ package com.we.service.impl;
 import com.we.dto.CategoryDto;
 import com.we.dto.SubCategoryDto;
 import com.we.exception.ResourceNotFound;
+import com.we.mapper.CategoryMapper;
 import com.we.model.SubCategory;
 import com.we.repository.SubCategoryRepository;
 import com.we.service.CategoryService;
-import com.we.service.CourseService;
 import com.we.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,7 +20,8 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     private final ModelMapper modelMapper;
     private final CategoryService categoryService;
     private final SubCategoryRepository subCategoryRepository;
-    private final CourseService courseService;
+//    private final CourseService courseService;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public SubCategoryDto subCategoryToDto(SubCategory subCategory) {
@@ -35,21 +36,22 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     @Override
     public SubCategoryDto findSubCategoryBySubCategoryId(long subCategoryId) {
         SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId));
-        return SubCategoryDto.builder()
-                .name(subCategory.getName())
-                .categoryId(subCategory.getCategory().getCategoryId())
-                .courses(subCategory.getCourses().stream().map(courseService::courseToDto).toList())
-                .build();
+        return categoryMapper.toDto(subCategory);
+//        return SubCategoryDto.builder()
+//                .name(subCategory.getName())
+//                .categoryId(subCategory.getCategory().getCategoryId())
+//                .courses(subCategory.getCourses().stream().map(courseService::courseToDto).toList())
+//                .build();
 
 //        return subCategoryToDto(subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId)));
     }
 
     @Override
     public SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto) {
-        SubCategory subCategory = dtoToSubCategory(subCategoryDto);
+        SubCategory subCategory = categoryMapper.toEntity(subCategoryDto);
         CategoryDto categoryById = categoryService.findCategoryByCategoryId(subCategoryDto.getCategoryId());
-        subCategory.setCategory(categoryService.dtoToCategory(categoryById));
-        return subCategoryToDto(subCategoryRepository.save(subCategory));
+        subCategory.setCategory(categoryMapper.toEntity(categoryById));
+        return categoryMapper.toDto(subCategoryRepository.save(subCategory));
     }
 
     @Override
@@ -57,8 +59,8 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         SubCategory subCategoryDB = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId));
         CategoryDto categoryById = categoryService.findCategoryByCategoryId(subCategoryDto.getCategoryId());
         subCategoryDB.setName(subCategoryDto.getName());
-        subCategoryDB.setCategory(categoryService.dtoToCategory(categoryById));
-        return subCategoryToDto(subCategoryRepository.save(subCategoryDB));
+        subCategoryDB.setCategory(categoryMapper.toEntity(categoryById));
+        return categoryMapper.toDto(subCategoryRepository.save(subCategoryDB));
     }
 
     @Override
@@ -69,7 +71,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
     @Override
     public List<SubCategoryDto> findSubCategoriesByCategoryId(long categoryId) {
-        List<SubCategory> byCategoryCategoryId = subCategoryRepository.findByCategoryCategoryId(categoryId);
-        return byCategoryCategoryId.stream().map(this::subCategoryToDto).toList();
+        List<SubCategory> list = subCategoryRepository.findByCategoryCategoryId(categoryId);
+        return list.stream().map(categoryMapper::toDto).toList();
     }
 }

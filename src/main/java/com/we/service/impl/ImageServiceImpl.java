@@ -21,9 +21,10 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
 
     @Override
-    public Image uploadImage(MultipartFile file, String folder) throws IOException {
+    public Image
+    uploadImage(MultipartFile file, String folder) throws IOException {
         Image image = gcsService.uploadFile(file, folder);
-        Image save = imageRepository.save(image);
+        Image save = imageRepository.saveAndFlush(image);
         log.info("saved : image {}", save);
         return save;
     }

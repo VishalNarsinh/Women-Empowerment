@@ -50,21 +50,11 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
 
 
-    @Override
-    public VideoDto videoToDto(Video video) {
-        return modelMapper.map(video, VideoDto.class);
-    }
+
 
     @Override
-    public Video dtoToVideo(VideoDto videoDto) {
-        return modelMapper.map(videoDto, Video.class);
-    }
-
-    @Override
-    public VideoDto saveVideo(MultipartFile file, long lessonId) {
+    public Video saveVideo(MultipartFile file) {
         try {
-
-//            Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFound("Lesson", "id", lessonId));
             String filename = UUID.randomUUID() +"-" + file.getOriginalFilename();
             String contentType = file.getContentType();
             InputStream inputStream = file.getInputStream();
@@ -80,9 +70,8 @@ public class VideoServiceImpl implements VideoService {
                     .contentType(contentType)
                     .processingStatus("PENDING")
                     .build();
-            Video save = videoRepository.save(video);
+            return videoRepository.save(video);
 //            processVideo(save.getVideoId());
-            return videoToDto(save);
         } catch (Exception e) {
             log.error("{}", e.getMessage(),e);
             throw new RuntimeException(e);
@@ -90,8 +79,8 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public VideoDto getVideoByVideoId(long videoId) {
-        return videoRepository.findById(videoId).map(this::videoToDto).orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
+    public Video getVideoByVideoId(long videoId) {
+        return videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
     }
 
     @Override
@@ -99,7 +88,7 @@ public class VideoServiceImpl implements VideoService {
         Video video = videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
         try {
             Files.deleteIfExists(Paths.get(video.getVideoUrl()));
-            VideoService.deleteFolder(Paths.get(HLS_DIR,String.valueOf(videoId)));
+//            VideoService.deleteFolder(Paths.get(HLS_DIR,String.valueOf(videoId)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -185,12 +174,12 @@ public class VideoServiceImpl implements VideoService {
 
 
     @Override
-    public VideoDto updateVideo(VideoDto videoDto, MultipartFile file, long videoId, long lessonId) {
+    public Video updateVideo(VideoDto videoDto, MultipartFile file, long videoId, long lessonId) {
         Video video = videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFound("Lesson", "id", lessonId));
         video.setVideoUrl(videoDto.getVideoUrl());
         video.setVideoName(videoDto.getVideoName());
         video.setContentType(videoDto.getContentType());
-        return videoToDto(videoRepository.save(video));
+        return videoRepository.save(video);
     }
 }

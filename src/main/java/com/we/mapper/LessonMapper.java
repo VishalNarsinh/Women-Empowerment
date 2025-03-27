@@ -11,7 +11,7 @@ public class LessonMapper {
         if (dto == null) return null;
 
         Lesson lesson = new Lesson();
-        lesson.setLessonId(dto.getLessonId());
+//        lesson.setLessonId(dto.getLessonId());
         lesson.setLessonName(dto.getLessonName());
         lesson.setLessonContent(dto.getLessonContent());
         lesson.setImage(dto.getImage()); // Direct mapping

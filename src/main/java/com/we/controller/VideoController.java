@@ -1,6 +1,6 @@
 package com.we.controller;
 
-import com.we.dto.VideoDto;
+import com.we.model.Video;
 import com.we.service.VideoService;
 import com.we.utils.AppConstants;
 import org.slf4j.Logger;
@@ -13,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,17 +38,16 @@ public class VideoController {
 
     @PostMapping("/save")
     public ResponseEntity<?> uploadVideo(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "lessonId", defaultValue = "0", required = false) long lessonId
+            @RequestParam("file") MultipartFile file
     ) {
-        return ResponseEntity.ok(videoService.saveVideo(file, lessonId));
+        return ResponseEntity.ok(videoService.saveVideo(file));
     }
 
     @GetMapping("/stream/{videoId}")
     public ResponseEntity<?> getVideo(@PathVariable("videoId") long videoId) {
-        VideoDto videoDto = videoService.getVideoByVideoId(videoId);
-        String videoUrl = videoDto.getVideoUrl();
-        String contentType = videoDto.getContentType();
+        Video video = videoService.getVideoByVideoId(videoId);
+        String videoUrl = video.getVideoUrl();
+        String contentType = video.getContentType();
         if (contentType == null || contentType.isEmpty())
             contentType = "application/octet-stream";
         Resource resource = new FileSystemResource(videoUrl);
@@ -66,10 +64,10 @@ public class VideoController {
         if (range == null || range.isEmpty()) {
             return getVideo(videoId);
         }
-        VideoDto videoDto = videoService.getVideoByVideoId(videoId);
-        Path path = Paths.get(videoDto.getVideoUrl());
-        Resource resource = new FileSystemResource(videoDto.getVideoUrl());
-        String contentType = videoDto.getContentType();
+        Video video = videoService.getVideoByVideoId(videoId);
+        Path path = Paths.get(video.getVideoUrl());
+        Resource resource = new FileSystemResource(video.getVideoUrl());
+        String contentType = video.getContentType();
         if (contentType == null || contentType.isEmpty()) {
             contentType = "application/octet-stream";
         }

@@ -28,11 +28,11 @@ public class Lesson {
     private String lessonContent;
 
     @OneToOne
-    @JoinColumn(name = "image_id",nullable = false)
+    @JoinColumn(name = "image_id")
     private Image image;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "video_id",nullable = false)
+    @OneToOne
+    @JoinColumn(name = "video_id")
     private Video video;
 
     @ManyToOne
@@ -40,6 +40,6 @@ public class Lesson {
     private Course course;
 
 
-    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.REMOVE,orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 }

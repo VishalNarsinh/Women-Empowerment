@@ -10,19 +10,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public interface VideoService {
 
-    VideoDto videoToDto(Video video);
+    Video saveVideo(MultipartFile file);
 
-    Video dtoToVideo(VideoDto videoDto);
-
-    VideoDto saveVideo(MultipartFile file, long lessonId);
-
-    VideoDto getVideoByVideoId(long videoId);
+    Video getVideoByVideoId(long videoId);
 
     void deleteVideo(long videoId);
 
     void retryVideoProcessing(long videoId) throws IOException, InterruptedException;
 
-    VideoDto updateVideo(VideoDto videoDto, MultipartFile file, long videoId, long lessonId);
+    Video updateVideo(VideoDto videoDto, MultipartFile file, long videoId, long lessonId);
 
     static void deleteFolder(Path folder) throws IOException {
         Files.walkFileTree(folder, new SimpleFileVisitor<>() {
