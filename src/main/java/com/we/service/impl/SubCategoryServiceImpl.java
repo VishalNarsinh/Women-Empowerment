@@ -5,11 +5,14 @@ import com.we.dto.SubCategoryDto;
 import com.we.exception.ResourceNotFound;
 import com.we.mapper.CategoryMapper;
 import com.we.model.SubCategory;
+import com.we.repository.CategoryRepository;
 import com.we.repository.SubCategoryRepository;
 import com.we.service.CategoryService;
 import com.we.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +20,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SubCategoryServiceImpl implements SubCategoryService {
+    private static final Logger log = LoggerFactory.getLogger(SubCategoryServiceImpl.class);
     private final ModelMapper modelMapper;
     private final CategoryService categoryService;
     private final SubCategoryRepository subCategoryRepository;
 //    private final CourseService courseService;
     private final CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public SubCategoryDto subCategoryToDto(SubCategory subCategory) {
@@ -49,8 +54,8 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     @Override
     public SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto) {
         SubCategory subCategory = categoryMapper.toEntity(subCategoryDto);
-        CategoryDto categoryById = categoryService.findCategoryByCategoryId(subCategoryDto.getCategoryId());
-        subCategory.setCategory(categoryMapper.toEntity(categoryById));
+        log.info("SubCategory {}", subCategory);
+        subCategory.setCategory(categoryRepository.findById(subCategoryDto.getCategoryId()).orElseThrow(() -> new ResourceNotFound("Category", "categoryId", subCategoryDto.getCategoryId())));
         return categoryMapper.toDto(subCategoryRepository.save(subCategory));
     }
 

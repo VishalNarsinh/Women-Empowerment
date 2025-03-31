@@ -21,7 +21,7 @@ public class CategoryMapper {
 
     public Category toEntity(CategoryDto dto) {
         Category category = new Category();
-        category.setCategoryId(dto.getCategoryId());
+//        category.setCategoryId(dto.getCategoryId());
         category.setName(dto.getName());
 
         if (dto.getSubCategories() != null) {
@@ -51,7 +51,7 @@ public class CategoryMapper {
 
     public SubCategory toEntity(SubCategoryDto dto) {
         SubCategory entity = new SubCategory();
-        entity.setSubCategoryId(dto.getSubCategoryId());
+//        entity.setSubCategoryId(dto.getSubCategoryId());
         entity.setName(dto.getName());
         entity.setCategory(new Category(dto.getCategoryId()));
         if (dto.getCourses() != null) {
