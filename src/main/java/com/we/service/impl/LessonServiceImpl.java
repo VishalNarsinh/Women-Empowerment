@@ -68,6 +68,6 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<LessonDto> findLessonsByCourseId(long courseId) {
-        return List.of();
+        return lessonRepository.findByCourseCourseId(courseId).stream().map(lessonMapper::toDto).toList();
     }
 }

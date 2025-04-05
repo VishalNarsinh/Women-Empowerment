@@ -38,4 +38,9 @@ public class LessonController {
     public ResponseEntity<?> updateLesson(@PathVariable long lessonId,@RequestBody LessonDto lessonDto) {
         return ResponseEntity.ok("");
     }
+
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<?> getLessonsByCourseId(@PathVariable long courseId) {
+        return ResponseEntity.ok(lessonService.findLessonsByCourseId(courseId));
+    }
 }

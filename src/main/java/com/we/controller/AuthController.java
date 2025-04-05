@@ -82,7 +82,10 @@ public class AuthController {
                     .setAudience(Collections.singletonList(CLIENT_ID))
                     .build();
 
+            logger.info("verifier: {}", verifier);
+
             GoogleIdToken idToken = verifier.verify(request.getIdToken());
+            logger.info("idToken: {}", idToken);
             if (idToken == null) {
                 return ResponseEntity.badRequest().body("Invalid Google token");
             }
@@ -90,7 +93,8 @@ public class AuthController {
             GoogleIdToken.Payload payload = idToken.getPayload();
             String email = payload.getEmail();
             String name = (String) payload.get("name");
-
+            logger.info("Email: {}", email);
+            logger.info("Name: {}", name);
             // Check if user exists
             User user = userRepository.findByEmail(email).get();
             if (user == null) {
@@ -112,6 +116,7 @@ public class AuthController {
                     .build()
             );
         } catch (Exception e) {
+            logger.error("Google authentication failed: {}",e.toString());
             return ResponseEntity.badRequest().body("Google authentication failed: " + e.getMessage());
         }
     }
