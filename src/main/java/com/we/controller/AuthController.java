@@ -2,8 +2,9 @@ package com.we.controller;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.util.Utils;
+import com.google.api.client.json.JsonFactory;
 import com.we.dto.*;
 import com.we.exception.ApiException;
 import com.we.model.Role;
@@ -77,15 +78,24 @@ public class AuthController {
 //                    .setAudience(Collections.singletonList(CLIENT_ID))
 //                    .build();
 
+//            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+//                    new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+//                    .setAudience(Collections.singletonList(CLIENT_ID))
+//                    .build();
+
+            JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    jsonFactory
+            )
                     .setAudience(Collections.singletonList(CLIENT_ID))
                     .build();
 
+            logger.info("Client ID: {}", CLIENT_ID);
             logger.info("verifier: {}", verifier);
-
+            logger.info("request.getIdToken(): {}", request.getIdToken());
             GoogleIdToken idToken = verifier.verify(request.getIdToken());
-            logger.info("idToken: {}", idToken);
+            logger.info("Google idToken: {}", idToken);
             if (idToken == null) {
                 return ResponseEntity.badRequest().body("Invalid Google token");
             }
