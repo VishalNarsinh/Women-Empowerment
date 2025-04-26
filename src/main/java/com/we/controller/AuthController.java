@@ -7,6 +7,7 @@ import com.google.api.client.googleapis.util.Utils;
 import com.google.api.client.json.JsonFactory;
 import com.we.dto.*;
 import com.we.exception.ApiException;
+import com.we.model.Image;
 import com.we.model.Role;
 import com.we.model.User;
 import com.we.repository.UserRepository;
@@ -21,10 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 
@@ -68,7 +66,7 @@ public class AuthController {
         }
 
     }
-
+/*
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) {
         try {
@@ -114,7 +112,7 @@ public class AuthController {
                 user.setFirstName(name);
                 user.setEnabled(true);
                 user.setRole(Role.ROLE_USER);
-                user.setPassword(null); // No password for Google login
+                user.setPassword("google_user"); // No password for Google login
                 user = userRepository.save(user);
             }
 
@@ -129,6 +127,70 @@ public class AuthController {
             logger.error("Google authentication failed: {}",e.toString());
             return ResponseEntity.badRequest().body("Google authentication failed: " + e.getMessage());
         }
+    }*/
+
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) {
+        try {
+            JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    jsonFactory
+            )
+                    .setAudience(Collections.singletonList(CLIENT_ID))
+                    .build();
+
+            logger.info("Client ID: {}", CLIENT_ID);
+            logger.info("Incoming ID Token: {}", request.getIdToken());
+
+            GoogleIdToken idToken = verifier.verify(request.getIdToken());
+
+            if (idToken == null) {
+                logger.error("Invalid Google token received");
+                return ResponseEntity.badRequest().body("Invalid Google token");
+            }
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+
+            logger.info("Verified Email: {}", email);
+            logger.info("User Name: {}", name);
+
+            // Find existing user or create a new one
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user == null) {
+                user = new User();
+                user.setEmail(email);
+                user.setFirstName(name);
+                user.setEnabled(true);
+                user.setRole(Role.ROLE_USER);
+                user.setPassword("google_user"); // Dummy password to avoid null
+                Image
+                        .builder()
+                        .imageUrl(payload.get("picture").toString())
+                        .build();
+                
+                user = userRepository.save(user);
+                logger.info("New user created: {}", user.getEmail());
+            }
+
+            // Generate JWT token
+            String jwtToken = jwtUtil.generateToken(userDetailsService.loadUserByUsername(email));
+
+            return ResponseEntity.ok(LoginResponse.builder()
+                    .user(userDetailsService.userToUserDto(user))
+                    .token(jwtToken)
+                    .build()
+            );
+        } catch (Exception e) {
+            logger.error("Google authentication failed", e);
+            return ResponseEntity.badRequest().body("Google authentication failed: " + e.getMessage());
+        }
     }
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello";
+    }
 }

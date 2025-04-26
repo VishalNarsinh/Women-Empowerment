@@ -28,6 +28,6 @@ public class LessonProgress {
 
     private int progressPercentage;
 
-    private int lastWatchedSeconds;
+    private int lastWatchedSecond;
 
 }

@@ -10,6 +10,7 @@ import com.we.repository.UserRepository;
 import com.we.service.EnrollmentService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,5 +39,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .completed(false)
                 .build();
         return  enrollmentRepository.save(enrollment);
+    }
+
+    @Override
+    public List<Enrollment> getEnrollmentsByUser(User user) {
+
+        return List.of();
     }
 }

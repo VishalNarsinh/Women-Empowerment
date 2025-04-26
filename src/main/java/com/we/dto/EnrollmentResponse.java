@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class EnrollmentResponse {
     private long enrollmentId;
-    private String userId;
-    private String courseId;
+    private long userId;
+    private long courseId;
     private boolean completed;
 }
