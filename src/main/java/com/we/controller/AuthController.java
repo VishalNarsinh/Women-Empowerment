@@ -10,9 +10,11 @@ import com.we.exception.ApiException;
 import com.we.model.Image;
 import com.we.model.Role;
 import com.we.model.User;
+import com.we.repository.ImageRepository;
 import com.we.repository.UserRepository;
 import com.we.security.jwt.JwtUtil;
 import com.we.service.impl.UserDetailsServiceImpl;
+import com.we.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +24,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -36,6 +40,8 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${google.client.id}")
     private String CLIENT_ID;
@@ -66,68 +72,7 @@ public class AuthController {
         }
 
     }
-/*
-    @PostMapping("/google-login")
-    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) {
-        try {
-            // Verify Google ID Token
-//            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-//                    new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-//                    .setAudience(Collections.singletonList(CLIENT_ID))
-//                    .build();
 
-//            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-//                    new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-//                    .setAudience(Collections.singletonList(CLIENT_ID))
-//                    .build();
-
-            JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    jsonFactory
-            )
-                    .setAudience(Collections.singletonList(CLIENT_ID))
-                    .build();
-
-            logger.info("Client ID: {}", CLIENT_ID);
-            logger.info("verifier: {}", verifier);
-            logger.info("request.getIdToken(): {}", request.getIdToken());
-            GoogleIdToken idToken = verifier.verify(request.getIdToken());
-            logger.info("Google idToken: {}", idToken);
-            if (idToken == null) {
-                return ResponseEntity.badRequest().body("Invalid Google token");
-            }
-
-            GoogleIdToken.Payload payload = idToken.getPayload();
-            String email = payload.getEmail();
-            String name = (String) payload.get("name");
-            logger.info("Email: {}", email);
-            logger.info("Name: {}", name);
-            // Check if user exists
-            User user = userRepository.findByEmail(email).get();
-            if (user == null) {
-                // New user → Register automatically with default role
-                user = new User();
-                user.setEmail(email);
-                user.setFirstName(name);
-                user.setEnabled(true);
-                user.setRole(Role.ROLE_USER);
-                user.setPassword("google_user"); // No password for Google login
-                user = userRepository.save(user);
-            }
-
-            String jwtToken = jwtUtil.generateToken(userDetailsService.loadUserByUsername(email));
-
-            return ResponseEntity.ok(LoginResponse.builder()
-                    .user(userDetailsService.userToUserDto(user))
-                    .token(jwtToken)
-                    .build()
-            );
-        } catch (Exception e) {
-            logger.error("Google authentication failed: {}",e.toString());
-            return ResponseEntity.badRequest().body("Google authentication failed: " + e.getMessage());
-        }
-    }*/
 
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest request) {
@@ -157,7 +102,7 @@ public class AuthController {
             logger.info("Verified Email: {}", email);
             logger.info("User Name: {}", name);
 
-            // Find existing user or create a new one
+            // Find an existing user or create a new one
             User user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
                 user = new User();
@@ -165,14 +110,20 @@ public class AuthController {
                 user.setFirstName(name);
                 user.setEnabled(true);
                 user.setRole(Role.ROLE_USER);
-                user.setPassword("google_user"); // Dummy password to avoid null
-                Image
+                user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+                String googlePicture = payload.get("picture").toString();
+                Image image = Image
                         .builder()
-                        .imageUrl(payload.get("picture").toString())
+                        .imageUrl(googlePicture != null ? googlePicture : AppConstants.DEFAULT_USER_IMAGE)
                         .build();
-                
+                Image saved = imageRepository.save(image);
+                user.setImage(saved);
+
+
                 user = userRepository.save(user);
                 logger.info("New user created: {}", user.getEmail());
+            }else{
+                logger.info("User already exists: {}", user.getEmail());
             }
 
             // Generate JWT token
@@ -189,8 +140,5 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello";
-    }
+
 }

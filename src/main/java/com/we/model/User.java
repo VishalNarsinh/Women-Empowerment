@@ -29,6 +29,11 @@ public class User implements UserDetails {
     private String email;
     @Column(length = 100, nullable = false)
     private String password;
+
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     private boolean enabled;
     @Enumerated(EnumType.STRING)
     private Role role;
