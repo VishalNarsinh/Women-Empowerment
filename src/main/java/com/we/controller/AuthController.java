@@ -57,7 +57,13 @@ public class AuthController {
         doAuthenticate(loginRequest.getEmail(), loginRequest.getPassword());
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
         String token = jwtUtil.generateToken(userDetails);
-        LoginResponse response = LoginResponse.builder().user(userDetailsService.userToUserDto((User) userDetails)).token(token).build();
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
+
+        LoginResponse response = LoginResponse.builder()
+                .user(userDetailsService.userToUserDto((User) userDetails))
+                .token(token)
+                .refreshToken(refreshToken)
+                .build();
         return ResponseEntity.ok(response);
     }
 
@@ -128,10 +134,11 @@ public class AuthController {
 
             // Generate JWT token
             String jwtToken = jwtUtil.generateToken(userDetailsService.loadUserByUsername(email));
-
+            String refreshToken = jwtUtil.generateRefreshToken(userDetailsService.loadUserByUsername(email));
             return ResponseEntity.ok(LoginResponse.builder()
                     .user(userDetailsService.userToUserDto(user))
                     .token(jwtToken)
+                    .refreshToken(refreshToken)
                     .build()
             );
         } catch (Exception e) {

@@ -1,7 +1,10 @@
 package com.we.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +14,14 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000; // 5 hours
+//    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000; // 5 hours
+    public static final long JWT_TOKEN_VALIDITY = 1*  60 * 1000; // 5 hours
 
-    // Generate a secure signing key (Better than hardcoded secret)
-    private final Key SECRET_KEY = Keys.hmacShaKeyFor("your-very-strong-secret-key-that-is-long-enough".getBytes());
+    public static String SECRET="MvHKa4x0NiU8/OBxt4XmnNSCNrHwYoP6axynZSpIoPg=";
+    private final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     // Retrieve username from JWT token
     public String getUsernameFromToken(String token) {
@@ -25,7 +30,11 @@ public class JwtUtil {
 
     // Retrieve expiration date from JWT token
     public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
+        try {
+            return getClaimFromToken(token, Claims::getExpiration);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -34,11 +43,6 @@ public class JwtUtil {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-//        return Jwts.parser()
-//                .setSigningKey(SECRET_KEY)
-//                .build()
-//                .parseClaimsJws(token)
-//                .getBody();
         return Jwts.parser()
                 .verifyWith((SecretKey) SECRET_KEY)
                 .build()
@@ -48,21 +52,28 @@ public class JwtUtil {
 
     // Check if the token has expired
     private boolean isTokenExpired(String token) {
-        return getExpirationDateFromToken(token).before(new Date());
+        Date expiration = getExpirationDateFromToken(token);
+        if (expiration == null) return false;
+        return expiration.before(new Date());
     }
 
-    // Generate token for user
+    // ✅ Generate Access Token for user (with expiration set)
     public String generateToken(UserDetails userDetails) {
-//        return Jwts.builder()
-//                .setSubject(userDetails.getUsername())
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
-//                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
-//                .compact();
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+JWT_TOKEN_VALIDITY))
+                .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY)) // 👈 expiration added
+                .signWith(SECRET_KEY)
+                .compact();
+    }
+
+    // ✅ (Optional) Generate Refresh Token (if you want)
+    public String generateRefreshToken(UserDetails userDetails) {
+        long refreshTokenValidity = 30L * 24 * 60 * 60 * 1000; // 30 days
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
                 .signWith(SECRET_KEY)
                 .compact();
     }
@@ -72,5 +83,20 @@ public class JwtUtil {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-}
+    // In JwtUtil.java
+    public boolean isTokenValid(String token) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parser()
+                    .verifyWith((SecretKey) SECRET_KEY)
+                    .build()
+                    .parseSignedClaims(token);
 
+            return true;
+
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+}
