@@ -18,7 +18,7 @@ public class LessonProgressController {
         this.lessonProgressService = lessonProgressService;
     }
 
-    @PostMapping
+    @PostMapping    
     public ResponseEntity<?> updateProgress(@RequestBody LessonProgressRequest lessonProgressRequest) {
         return ResponseEntity.ok(lessonProgressService.updateLessonProgress(lessonProgressRequest));
     }

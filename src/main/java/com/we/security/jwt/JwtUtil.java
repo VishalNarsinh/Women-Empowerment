@@ -17,8 +17,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-//    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000; // 5 hours
-    public static final long JWT_TOKEN_VALIDITY = 1*  60 * 1000; // 5 hours
+    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60 * 1000; // 5 hours
 
     public static String SECRET="MvHKa4x0NiU8/OBxt4XmnNSCNrHwYoP6axynZSpIoPg=";
     private final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());

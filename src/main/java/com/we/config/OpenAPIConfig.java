@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "Women Empowerment API", version = "v1"),
+        info = @Info(title = "Learning System API", version = "v1"),
         security = @SecurityRequirement(name = "bearerAuth") // Apply globally
 )
 @SecurityScheme(
