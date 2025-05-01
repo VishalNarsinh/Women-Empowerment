@@ -1,16 +1,11 @@
 package com.we.mapper;
 
 import com.we.dto.CategoryDto;
-import com.we.dto.CourseDto;
 import com.we.dto.SubCategoryDto;
 import com.we.model.Category;
-import com.we.model.Course;
 import com.we.model.SubCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -24,12 +19,12 @@ public class CategoryMapper {
 //        category.setCategoryId(dto.getCategoryId());
         category.setName(dto.getName());
 
-        if (dto.getSubCategories() != null) {
-            List<SubCategory> subCategories = dto.getSubCategories().stream()
-                    .map(this::toEntity)
-                    .collect(Collectors.toList());
-            category.setSubCategories(subCategories);
-        }
+//        if (dto.getSubCategories() != null) {
+//            List<SubCategory> subCategories = dto.getSubCategories().stream()
+//                    .map(this::toEntity)
+//                    .collect(Collectors.toList());
+//            category.setSubCategories(subCategories);
+//        }
 
         return category;
     }
@@ -39,12 +34,12 @@ public class CategoryMapper {
         dto.setCategoryId(category.getCategoryId());
         dto.setName(category.getName());
 
-        if (category.getSubCategories() != null) {
-            List<SubCategoryDto> subCategoryDtos = category.getSubCategories().stream()
-                    .map(this::toDto)
-                    .collect(Collectors.toList());
-            dto.setSubCategories(subCategoryDtos);
-        }
+//        if (category.getSubCategories() != null) {
+//            List<SubCategoryDto> subCategoryDtos = category.getSubCategories().stream()
+//                    .map(this::toDto)
+//                    .collect(Collectors.toList());
+//            dto.setSubCategories(subCategoryDtos);
+//        }
 
         return dto;
     }
@@ -54,12 +49,12 @@ public class CategoryMapper {
 //        entity.setSubCategoryId(dto.getSubCategoryId());
         entity.setName(dto.getName());
         entity.setCategory(new Category(dto.getCategoryId()));
-        if (dto.getCourses() != null) {
-            List<Course> courses = dto.getCourses().stream()
-                    .map(courseMapper::toEntity)
-                    .collect(Collectors.toList());
-            entity.setCourses(courses);
-        }
+//        if (dto.getCourses() != null) {
+//            List<Course> courses = dto.getCourses().stream()
+//                    .map(courseMapper::toEntity)
+//                    .collect(Collectors.toList());
+//            entity.setCourses(courses);
+//        }
 
         return entity;
     }
@@ -70,12 +65,12 @@ public class CategoryMapper {
         dto.setName(entity.getName());
         dto.setCategoryId(entity.getCategory().getCategoryId());
 
-        if (entity.getCourses() != null) {
-            List<CourseDto> courseDtos = entity.getCourses().stream()
-                    .map(courseMapper::toDto)
-                    .collect(Collectors.toList());
-            dto.setCourses(courseDtos);
-        }
+//        if (entity.getCourses() != null) {
+//            List<CourseDto> courseDtos = entity.getCourses().stream()
+//                    .map(courseMapper::toDto)
+//                    .collect(Collectors.toList());
+//            dto.setCourses(courseDtos);
+//        }
         return dto;
     }
 }

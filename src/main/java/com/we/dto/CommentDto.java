@@ -1,0 +1,14 @@
+package com.we.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class CommentDto {
+    private Long commentId;
+    private String content;
+    private Long userId;
+    private String userName; // if needed for display
+}
+

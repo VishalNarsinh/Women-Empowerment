@@ -1,12 +1,10 @@
 package com.we.service.impl;
 
 import com.we.dto.CourseDto;
-import com.we.dto.LessonDto;
 import com.we.dto.SubCategoryDto;
 import com.we.exception.ResourceNotFound;
 import com.we.model.Course;
 import com.we.model.Image;
-import com.we.model.Lesson;
 import com.we.model.SubCategory;
 import com.we.repository.CourseRepository;
 import com.we.repository.SubCategoryRepository;
@@ -40,7 +38,7 @@ public class CourseServiceImpl implements CourseService {
                 .courseName(course.getCourseName())
                 .courseDescription(course.getCourseDescription())
                 .image(course.getImage())
-                .lessons(course.getLessons().stream().map(lesson->modelMapper.map(lesson, LessonDto.class)).toList())
+//                .lessons(course.getLessons().stream().map(lesson->modelMapper.map(lesson, LessonDto.class)).toList())
                 .courseId(course.getCourseId())
                 .subCategoryId(course.getSubCategory().getSubCategoryId())
                 .build();
@@ -53,7 +51,7 @@ public class CourseServiceImpl implements CourseService {
                 .courseName(courseDto.getCourseName())
                 .courseDescription(courseDto.getCourseDescription())
                 .image(courseDto.getImage())
-                .lessons(courseDto.getLessons().stream().map(lesson->modelMapper.map(lesson, Lesson.class)).toList())
+//                .lessons(courseDto.getLessons().stream().map(lesson->modelMapper.map(lesson, Lesson.class)).toList())
                 .build();
         return modelMapper.map(courseDto, Course.class);
     }

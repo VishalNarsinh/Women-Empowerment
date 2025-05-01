@@ -1,6 +1,5 @@
 package com.we.dto;
 
-import com.we.model.Comment;
 import com.we.model.Image;
 import com.we.model.Video;
 import lombok.AllArgsConstructor;
@@ -22,5 +21,5 @@ public class LessonDto {
     private Image image;
     private Video video;
     private Long courseId;
-    private List<Comment> comments=new ArrayList<>();
+    private List<CommentDto> comments=new ArrayList<>();
 }
