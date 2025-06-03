@@ -1,10 +1,12 @@
 package com.we.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
-@Data
+@Getter
+@Setter
 public class CustomMessage {
     private String message;
     private String status;
