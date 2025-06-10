@@ -96,12 +96,3 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
-# JWT Configuration
-jwt.secret=your_jwt_secret_key
-jwt.expirationMs=3600000
-
-# Logging
-logging.level.org.springframework=INFO
-```
-
-> ⚠️ **Note:** Always store sensitive credentials (like DB passwords or JWT secrets) securely using environment variables or Spring Boot config servers for production.
