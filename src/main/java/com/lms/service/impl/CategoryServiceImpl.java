@@ -1,7 +1,7 @@
 package com.lms.service.impl;
 
 import com.lms.dto.CategoryDto;
-import com.lms.exception.ResourceNotFound;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.mapper.CategoryMapper;
 import com.lms.model.Category;
 import com.lms.repository.CategoryRepository;
@@ -37,20 +37,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto,long categoryId) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id", categoryDto.getCategoryId()));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryDto.getCategoryId()));
         category.setName(categoryDto.getName());
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
     @Override
     public void deleteCategory(long categoryId) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id", categoryId));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         categoryRepository.delete(category);
     }
 
     @Override
     public CategoryDto findCategoryByCategoryId(long categoryId) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFound("Category", "id",categoryId));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "id",categoryId));
         return categoryMapper.toDto(category);}
 
     @Override

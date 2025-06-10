@@ -2,7 +2,7 @@ package com.lms.service.impl;
 
 import com.lms.dto.CategoryDto;
 import com.lms.dto.SubCategoryDto;
-import com.lms.exception.ResourceNotFound;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.mapper.CategoryMapper;
 import com.lms.model.SubCategory;
 import com.lms.repository.CategoryRepository;
@@ -40,7 +40,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
     @Override
     public SubCategoryDto findSubCategoryBySubCategoryId(long subCategoryId) {
-        SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId));
+        SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "subCategoryId", subCategoryId));
         return categoryMapper.toDto(subCategory);
 //        return SubCategoryDto.builder()
 //                .name(subCategory.getName())
@@ -55,13 +55,13 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     public SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto) {
         SubCategory subCategory = categoryMapper.toEntity(subCategoryDto);
         log.info("SubCategory {}", subCategory);
-        subCategory.setCategory(categoryRepository.findById(subCategoryDto.getCategoryId()).orElseThrow(() -> new ResourceNotFound("Category", "categoryId", subCategoryDto.getCategoryId())));
+        subCategory.setCategory(categoryRepository.findById(subCategoryDto.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", subCategoryDto.getCategoryId())));
         return categoryMapper.toDto(subCategoryRepository.save(subCategory));
     }
 
     @Override
     public SubCategoryDto updateSubCategory(SubCategoryDto subCategoryDto,long subCategoryId) {
-        SubCategory subCategoryDB = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId));
+        SubCategory subCategoryDB = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "subCategoryId", subCategoryId));
         CategoryDto categoryById = categoryService.findCategoryByCategoryId(subCategoryDto.getCategoryId());
         subCategoryDB.setName(subCategoryDto.getName());
         subCategoryDB.setCategory(categoryMapper.toEntity(categoryById));
@@ -70,7 +70,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
     @Override
     public void deleteSubCategory(long subCategoryId) {
-        SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId));
+        SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "subCategoryId", subCategoryId));
         subCategoryRepository.delete(subCategory);
     }
 

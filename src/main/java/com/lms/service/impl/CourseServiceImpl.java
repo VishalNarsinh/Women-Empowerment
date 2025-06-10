@@ -2,7 +2,7 @@ package com.lms.service.impl;
 
 import com.lms.dto.CourseDto;
 import com.lms.dto.SubCategoryDto;
-import com.lms.exception.ResourceNotFound;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.model.Course;
 import com.lms.model.Image;
 import com.lms.model.SubCategory;
@@ -58,7 +58,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto saveCourse(CourseDto courseDto, MultipartFile file) throws IOException {
-        SubCategory subCategory = subCategoryRepository.findById(courseDto.getSubCategoryId()).orElseThrow(() -> new ResourceNotFound("SubCategory", "id", courseDto.getSubCategoryId()));
+        SubCategory subCategory = subCategoryRepository.findById(courseDto.getSubCategoryId()).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "id", courseDto.getSubCategoryId()));
         Course course = dtoToCourse(courseDto);
         course.setSubCategory(subCategory);
         Image image = imageService.uploadImage(file, "course");
@@ -70,7 +70,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public void deleteCourse(long courseId) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFound("Course", "id", courseId));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
         log.info("deleting course {}", course);
         imageService.deleteImage(course.getImage().getImageId());
         course.setImage(null);
@@ -92,7 +92,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto findCourseByCourseId(long courseId) {
-        return courseToDto(courseRepository.findById(courseId).orElseThrow(()->new ResourceNotFound("Course","id",courseId)));
+        return courseToDto(courseRepository.findById(courseId).orElseThrow(()->new ResourceNotFoundException("Course","id",courseId)));
     }
 
     @Override

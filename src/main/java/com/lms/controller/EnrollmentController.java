@@ -1,13 +1,15 @@
 package com.lms.controller;
 
 import com.lms.dto.EnrollmentRequest;
+import com.lms.dto.EnrollmentResponse;
+import com.lms.mapper.EnrollmentMapper;
+import com.lms.model.Enrollment;
 import com.lms.service.EnrollmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/enrollments")
@@ -18,6 +20,24 @@ public class EnrollmentController {
 
     @PostMapping
     public ResponseEntity<?> enrollUser(@RequestBody EnrollmentRequest request) {
-        return ResponseEntity.ok(enrollmentService.enrollUserInCourse(request.getUserId(), request.getCourseId()));
+        Enrollment enrollment = enrollmentService.enrollUserInCourse(request.getUserId(), request.getCourseId());
+        EnrollmentResponse enrollmentResponse = EnrollmentMapper.toResponse(enrollment);
+        return ResponseEntity.ok(enrollmentResponse);
     }
+    @PostMapping("/{enrollmentId}/complete")
+    public ResponseEntity<?> markCourseAsCompleted(@PathVariable Long enrollmentId) {
+        boolean completed = enrollmentService.markEnrollmentAsCompleted(enrollmentId);
+        if (completed) {
+            return ResponseEntity.ok("Course marked as completed");
+        } else {
+            return ResponseEntity.badRequest().body("Course is not yet fully completed");
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserEnrollments(@PathVariable Long userId) {
+        List<EnrollmentResponse> enrollments = enrollmentService.getEnrollmentsByUser(userId);
+        return ResponseEntity.ok(enrollments);
+    }
+
 }

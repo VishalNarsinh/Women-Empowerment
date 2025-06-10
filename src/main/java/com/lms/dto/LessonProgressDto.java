@@ -1,9 +1,11 @@
 package com.lms.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class LessonProgressRequest {
+@Builder
+public class LessonProgressDto {
     private long enrollmentId;
     private long lessonId;
     private boolean completed;

@@ -2,7 +2,7 @@ package com.lms.service.impl;
 
 import com.lms.dto.RegisterRequest;
 import com.lms.dto.UserDto;
-import com.lms.exception.ResourceNotFound;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.model.Role;
 import com.lms.model.User;
 import com.lms.repository.UserRepository;
@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, MyUserDetails
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).orElseThrow(()->new ResourceNotFound("User", "email", username));
+        return userRepository.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User", "email", username));
     }
     @Override
     public User registerRequestToUser(RegisterRequest registerRequest){
@@ -57,7 +57,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, MyUserDetails
 
     @Override
     public void deleteUser(long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFound("User", "id", userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         userRepository.delete(user);
     }
 

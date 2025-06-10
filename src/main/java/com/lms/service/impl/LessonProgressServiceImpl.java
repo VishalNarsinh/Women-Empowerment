@@ -1,7 +1,7 @@
 package com.lms.service.impl;
 
-import com.lms.dto.LessonProgressRequest;
-import com.lms.exception.ResourceNotFound;
+import com.lms.dto.LessonProgressDto;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.model.Enrollment;
 import com.lms.model.Lesson;
 import com.lms.model.LessonProgress;
@@ -24,18 +24,18 @@ public class LessonProgressServiceImpl implements LessonProgressService {
     }
 
     @Override
-    public LessonProgress updateLessonProgress(LessonProgressRequest lessonProgressRequest) {
-        Enrollment enrollment = enrollmentRepository.findById(lessonProgressRequest.getEnrollmentId()).orElseThrow(() -> new ResourceNotFound("Enrollment", "id", lessonProgressRequest.getEnrollmentId()));
-        Lesson lesson = lessonRepository.findById(lessonProgressRequest.getLessonId()).orElseThrow(() -> new ResourceNotFound("Lesson", "id", lessonProgressRequest.getLessonId()));
+    public LessonProgress updateLessonProgress(LessonProgressDto lessonProgressDto) {
+        Enrollment enrollment = enrollmentRepository.findById(lessonProgressDto.getEnrollmentId()).orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", lessonProgressDto.getEnrollmentId()));
+        Lesson lesson = lessonRepository.findById(lessonProgressDto.getLessonId()).orElseThrow(() -> new ResourceNotFoundException("Lesson", "id", lessonProgressDto.getLessonId()));
         LessonProgress lessonProgress = lessonProgressRepository.findByEnrollmentAndLesson(enrollment, lesson).orElse(
                 LessonProgress.builder()
                         .enrollment(enrollment)
                         .lesson(lesson)
                         .build()
         );
-        lessonProgress.setCompleted(lessonProgressRequest.isCompleted());
-        lessonProgress.setProgressPercentage(lessonProgressRequest.getProgressPercentage());
-        lessonProgress.setLastWatchedSecond(lessonProgressRequest.getLastWatchedSeconds());
+        lessonProgress.setCompleted(lessonProgressDto.isCompleted());
+        lessonProgress.setProgressPercentage(lessonProgressDto.getProgressPercentage());
+        lessonProgress.setLastWatchedSecond(lessonProgressDto.getLastWatchedSeconds());
         return lessonProgressRepository.save(lessonProgress);
     }
 }

@@ -1,7 +1,7 @@
 package com.lms.service.impl;
 
 import com.lms.dto.VideoDto;
-import com.lms.exception.ResourceNotFound;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.model.Lesson;
 import com.lms.model.Video;
 import com.lms.repository.LessonRepository;
@@ -80,12 +80,12 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Video getVideoByVideoId(long videoId) {
-        return videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
+        return videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId));
     }
 
     @Override
     public void deleteVideo(long videoId) {
-        Video video = videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId));
         try {
             Files.deleteIfExists(Paths.get(video.getVideoUrl()));
 //            VideoService.deleteFolder(Paths.get(HLS_DIR,String.valueOf(videoId)));
@@ -101,7 +101,7 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public void processVideo(long videoId) throws IOException, InterruptedException {
         Video video = videoRepository.findById(videoId)
-                .orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
+                .orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId));
         String videoId1 = String.valueOf(videoId);
         Path baseFolder = Paths.get(HLS_DIR, videoId1);
         Files.createDirectories(baseFolder);
@@ -152,7 +152,7 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public void retryVideoProcessing(long videoId) throws IOException, InterruptedException {
         Video video = videoRepository.findById(videoId)
-                .orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
+                .orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId));
 
         if (!"FAILED".equals(video.getProcessingStatus())) {
             throw new IllegalStateException("Only failed videos can be retried.");
@@ -175,8 +175,8 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Video updateVideo(VideoDto videoDto, MultipartFile file, long videoId, long lessonId) {
-        Video video = videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFound("Video", "id", videoId));
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFound("Lesson", "id", lessonId));
+        Video video = videoRepository.findById(videoId).orElseThrow(() -> new ResourceNotFoundException("Video", "id", videoId));
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson", "id", lessonId));
         video.setVideoUrl(videoDto.getVideoUrl());
         video.setVideoName(videoDto.getVideoName());
         video.setContentType(videoDto.getContentType());

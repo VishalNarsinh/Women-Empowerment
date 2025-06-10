@@ -1,7 +1,7 @@
 package com.lms.service.impl;
 
 import com.lms.dto.LessonDto;
-import com.lms.exception.ResourceNotFound;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.mapper.LessonMapper;
 import com.lms.model.Image;
 import com.lms.model.Lesson;
@@ -34,7 +34,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public LessonDto saveLesson(LessonDto lessonDto, MultipartFile imageFile, MultipartFile videoFile) throws IOException {
         Lesson entity = lessonMapper.toEntity(lessonDto);
-        entity.setCourse(courseRepository.findById(lessonDto.getCourseId()).orElseThrow(()->new ResourceNotFound("Course","id",lessonDto.getCourseId())));
+        entity.setCourse(courseRepository.findById(lessonDto.getCourseId()).orElseThrow(()->new ResourceNotFoundException("Course","id",lessonDto.getCourseId())));
         Image image = imageService.uploadImage(imageFile, "lesson");
         log.info("Image Id : {}", image.getImageId());
         entity.setImage(image);
@@ -52,7 +52,7 @@ public class LessonServiceImpl implements LessonService {
     @Transactional
     @Override
     public void deleteLesson(long lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFound("Lesson", "id", lessonId));
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson", "id", lessonId));
         imageService.deleteImage(lesson.getImage().getImageId());
         videoService.deleteVideo(lesson.getVideo().getVideoId());
         lesson.setImage(null);
@@ -63,7 +63,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonDto findLessonById(long lessonId) {
-        return lessonRepository.findById(lessonId).map(lessonMapper::toDto).orElseThrow(() -> new ResourceNotFound("Lesson", "id", lessonId));
+        return lessonRepository.findById(lessonId).map(lessonMapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Lesson", "id", lessonId));
     }
 
     @Override

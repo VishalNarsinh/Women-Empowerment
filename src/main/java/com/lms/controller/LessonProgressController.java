@@ -1,6 +1,8 @@
 package com.lms.controller;
 
-import com.lms.dto.LessonProgressRequest;
+import com.lms.dto.LessonProgressDto;
+import com.lms.mapper.LessonProgressMapper;
+import com.lms.model.LessonProgress;
 import com.lms.service.LessonProgressService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,8 @@ public class LessonProgressController {
     }
 
     @PostMapping    
-    public ResponseEntity<?> updateProgress(@RequestBody LessonProgressRequest lessonProgressRequest) {
-        return ResponseEntity.ok(lessonProgressService.updateLessonProgress(lessonProgressRequest));
+    public ResponseEntity<?> updateProgress(@RequestBody LessonProgressDto lessonProgressDto) {
+        LessonProgress lessonProgress = lessonProgressService.updateLessonProgress(lessonProgressDto);
+        return ResponseEntity.ok(LessonProgressMapper.toDto(lessonProgress));
     }
 }

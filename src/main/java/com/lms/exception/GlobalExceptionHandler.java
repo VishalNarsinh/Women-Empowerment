@@ -21,8 +21,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFound.class)
-    public ResponseEntity<?> resourceNotFound(ResourceNotFound ex, WebRequest webRequest) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> resourceNotFound(ResourceNotFoundException ex, WebRequest webRequest) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                 webRequest.getDescription(false),
                 HttpStatus.NOT_FOUND,

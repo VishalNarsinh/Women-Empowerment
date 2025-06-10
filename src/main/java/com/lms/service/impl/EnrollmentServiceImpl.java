@@ -1,8 +1,11 @@
 package com.lms.service.impl;
 
-import com.lms.exception.ResourceNotFound;
+import com.lms.dto.EnrollmentResponse;
+import com.lms.exception.ResourceNotFoundException;
+import com.lms.mapper.EnrollmentMapper;
 import com.lms.model.Course;
 import com.lms.model.Enrollment;
+import com.lms.model.LessonProgress;
 import com.lms.model.User;
 import com.lms.repository.CourseRepository;
 import com.lms.repository.EnrollmentRepository;
@@ -27,8 +30,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     public Enrollment enrollUserInCourse(Long userId, Long courseId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFound("User", "id", userId));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFound("Course", "id", courseId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
         Optional<Enrollment> existing = enrollmentRepository.findByUserAndCourse(user, course);
         if(existing.isPresent()){
             return existing.get();
@@ -42,8 +45,25 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public List<Enrollment> getEnrollmentsByUser(User user) {
-
-        return List.of();
+    public List<EnrollmentResponse> getEnrollmentsByUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        List<Enrollment> enrollments = enrollmentRepository.findByUser(user);
+        return enrollments.stream().map(EnrollmentMapper::toResponse).toList();
     }
+
+    @Override
+    public boolean markEnrollmentAsCompleted(Long enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "enrollmentId", enrollmentId));
+
+        boolean allLessonsCompleted = enrollment.getLessonProgressList().stream()
+                .allMatch(LessonProgress::isCompleted);
+
+        if (!allLessonsCompleted) return false;
+
+        enrollment.setCompleted(true);
+        enrollmentRepository.save(enrollment);
+        return true;
+    }
+
 }

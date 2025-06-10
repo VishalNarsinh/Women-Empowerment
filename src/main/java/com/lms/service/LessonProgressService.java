@@ -1,8 +1,8 @@
 package com.lms.service;
 
-import com.lms.dto.LessonProgressRequest;
+import com.lms.dto.LessonProgressDto;
 import com.lms.model.LessonProgress;
 
 public interface LessonProgressService {
-    LessonProgress updateLessonProgress(LessonProgressRequest lessonProgressRequest);
+    LessonProgress updateLessonProgress(LessonProgressDto lessonProgressDto);
 }

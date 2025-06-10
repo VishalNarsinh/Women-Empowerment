@@ -1,6 +1,6 @@
 package com.lms.service.impl;
 
-import com.lms.exception.ResourceNotFound;
+import com.lms.exception.ResourceNotFoundException;
 import com.lms.model.Image;
 import com.lms.repository.ImageRepository;
 import com.lms.service.GCSService;
@@ -35,7 +35,7 @@ public class ImageServiceImpl implements ImageService {
             gcsService.deleteFile(image.getObjectName());
             imageRepository.delete(image);
         } , () ->{
-            throw new ResourceNotFound("Image", "id", imageId);
+            throw new ResourceNotFoundException("Image", "id", imageId);
         });
     }
 }
