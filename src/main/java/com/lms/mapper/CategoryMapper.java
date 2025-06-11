@@ -48,7 +48,7 @@ public class CategoryMapper {
         SubCategory entity = new SubCategory();
 //        entity.setSubCategoryId(dto.getSubCategoryId());
         entity.setName(dto.getName());
-        entity.setCategory(new Category(dto.getCategoryId()));
+//        entity.setCategory(new Category(dto.getCategoryId()));
 //        if (dto.getCourses() != null) {
 //            List<Course> courses = dto.getCourses().stream()
 //                    .map(courseMapper::toEntity)

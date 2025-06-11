@@ -41,7 +41,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto saveCourse(CourseDto courseDto, MultipartFile file,String email) throws IOException {
         SubCategory subCategory = subCategoryRepository.findById(courseDto.getSubCategoryId()).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "id", courseDto.getSubCategoryId()));
-//        Course course = dtoToCourse(courseDto);
         Course course = courseMapper.toEntity(courseDto);
         course.setSubCategory(subCategory);
         Image image = imageService.uploadImage(file, AppConstants.COURSE_IMAGE_FOLDER);
@@ -49,7 +48,6 @@ public class CourseServiceImpl implements CourseService {
         course.setImage(image);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
         course.setInstructor(user);
-//        return courseToDto(courseRepository.save(course));
         return courseMapper.toDto(courseRepository.save(course));
     }
 

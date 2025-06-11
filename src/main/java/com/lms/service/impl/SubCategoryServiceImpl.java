@@ -28,31 +28,18 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
 
-    @Override
-    public SubCategoryDto subCategoryToDto(SubCategory subCategory) {
-        return modelMapper.map(subCategory, SubCategoryDto.class);
-    }
 
-    @Override
-    public SubCategory dtoToSubCategory(SubCategoryDto subCategoryDto) {
-        return modelMapper.map(subCategoryDto, SubCategory.class);
-    }
 
     @Override
     public SubCategoryDto findSubCategoryBySubCategoryId(long subCategoryId) {
         SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "subCategoryId", subCategoryId));
         return categoryMapper.toDto(subCategory);
-//        return SubCategoryDto.builder()
-//                .name(subCategory.getName())
-//                .categoryId(subCategory.getCategory().getCategoryId())
-//                .courses(subCategory.getCourses().stream().map(courseService::courseToDto).toList())
-//                .build();
 
-//        return subCategoryToDto(subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFound("SubCategory", "subCategoryId", subCategoryId)));
     }
 
     @Override
     public SubCategoryDto saveSubCategory(SubCategoryDto subCategoryDto) {
+
         SubCategory subCategory = categoryMapper.toEntity(subCategoryDto);
         log.info("SubCategory {}", subCategory);
         subCategory.setCategory(categoryRepository.findById(subCategoryDto.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", subCategoryDto.getCategoryId())));

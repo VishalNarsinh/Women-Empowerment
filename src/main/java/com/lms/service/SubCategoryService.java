@@ -1,14 +1,10 @@
 package com.lms.service;
 
 import com.lms.dto.SubCategoryDto;
-import com.lms.model.SubCategory;
 
 import java.util.List;
 
 public interface SubCategoryService {
-    SubCategoryDto subCategoryToDto(SubCategory subCategory);
-
-    SubCategory dtoToSubCategory(SubCategoryDto subCategoryDto);
 
     SubCategoryDto findSubCategoryBySubCategoryId(long subCategoryId);
 
