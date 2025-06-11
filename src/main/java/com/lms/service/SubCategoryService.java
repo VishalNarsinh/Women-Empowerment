@@ -13,4 +13,6 @@ public interface SubCategoryService {
     void deleteSubCategory(long subCategoryId);
 
     List<SubCategoryDto> findSubCategoriesByCategoryId(long categoryId);
+
+    List<SubCategoryDto> findAll();
 }

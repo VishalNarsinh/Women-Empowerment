@@ -1,7 +1,6 @@
 package com.lms.service;
 
 import com.lms.dto.CourseDto;
-import com.lms.dto.SubCategoryDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ public interface CourseService {
 
     CourseDto updateCourse(CourseDto courseDto,long courseId, MultipartFile file);
 
-    List<CourseDto> findCourseBySubCategoryId(SubCategoryDto subCategoryDto);
+    List<CourseDto> findCourseBySubCategoryId(Long subCategoryId);
 
     CourseDto findCourseByCourseId(long courseId);
 

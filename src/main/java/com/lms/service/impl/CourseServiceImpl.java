@@ -1,7 +1,6 @@
 package com.lms.service.impl;
 
 import com.lms.dto.CourseDto;
-import com.lms.dto.SubCategoryDto;
 import com.lms.exception.ResourceNotFoundException;
 import com.lms.mapper.CourseMapper;
 import com.lms.model.Course;
@@ -70,8 +69,9 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDto> findCourseBySubCategoryId(SubCategoryDto subCategoryDto) {
-        return List.of();
+    public List<CourseDto> findCourseBySubCategoryId(Long subCategoryId) {
+        List<Course> courseBySubCategory = courseRepository.findCourseBySubCategory(subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "id", subCategoryId)));
+        return courseBySubCategory.stream().map(courseMapper::toDto).toList();
     }
 
     @Override
@@ -82,7 +82,6 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDto> findAll() {
-//        return courseRepository.findAll().stream().map(this::courseToDto).toList();
         return courseRepository.findAll().stream().map(courseMapper::toDto).toList();
     }
 }

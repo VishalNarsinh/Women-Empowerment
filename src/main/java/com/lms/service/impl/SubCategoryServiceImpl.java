@@ -28,8 +28,6 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
 
-
-
     @Override
     public SubCategoryDto findSubCategoryBySubCategoryId(long subCategoryId) {
         SubCategory subCategory = subCategoryRepository.findById(subCategoryId).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "subCategoryId", subCategoryId));
@@ -65,5 +63,10 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     public List<SubCategoryDto> findSubCategoriesByCategoryId(long categoryId) {
         List<SubCategory> list = subCategoryRepository.findByCategoryCategoryId(categoryId);
         return list.stream().map(categoryMapper::toDto).toList();
+    }
+
+    @Override
+    public List<SubCategoryDto> findAll() {
+        return subCategoryRepository.findAll().stream().map(categoryMapper::toDto).toList();
     }
 }

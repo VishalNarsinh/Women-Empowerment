@@ -38,5 +38,10 @@ public class SubCategoryController {
         subCategoryService.deleteSubCategory(subCategoryId);
         return ResponseEntity.ok(CustomMessage.builder().message("Subcategory deleted successfully").status("success").build());
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(subCategoryService.findAll());
+    }
     
 }

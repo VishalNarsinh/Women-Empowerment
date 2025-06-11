@@ -19,15 +19,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    @Override
-    public Category dtoToCategory(CategoryDto categoryDto) {
-        return modelMapper.map( categoryDto, Category.class);
-    }
 
-    @Override
-    public CategoryDto categoryToDto(Category category) {
-        return modelMapper.map(category, CategoryDto.class);
-    }
 
     @Override
     public CategoryDto saveCategory(CategoryDto categoryDto) {
