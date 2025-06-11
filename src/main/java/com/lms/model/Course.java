@@ -36,6 +36,9 @@ public class Course {
     @JoinColumn(name = "sub_category_id")
     private SubCategory subCategory;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User instructor;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Lesson> lessons = new ArrayList<>();

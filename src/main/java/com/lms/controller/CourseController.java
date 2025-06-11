@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -29,9 +30,10 @@ public class CourseController {
 
 
     @PostMapping(value = "/")
-    public ResponseEntity<?> saveCourse(@RequestParam("course")String courseDtoData,@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> saveCourse(@RequestParam("course")String courseDtoData, @RequestParam("file") MultipartFile file, Principal principal) throws IOException {
+        String email = principal.getName();
         CourseDto courseDto = objectMapper.readValue(courseDtoData, CourseDto.class);
-        return ResponseEntity.ok(courseService.saveCourse(courseDto,file));
+        return ResponseEntity.ok(courseService.saveCourse(courseDto,file,email));
     }
 
     @GetMapping("/{courseId}")

@@ -3,15 +3,18 @@ package com.lms.service.impl;
 import com.lms.dto.CourseDto;
 import com.lms.dto.SubCategoryDto;
 import com.lms.exception.ResourceNotFoundException;
+import com.lms.mapper.CourseMapper;
 import com.lms.model.Course;
 import com.lms.model.Image;
 import com.lms.model.SubCategory;
+import com.lms.model.User;
 import com.lms.repository.CourseRepository;
 import com.lms.repository.SubCategoryRepository;
+import com.lms.repository.UserRepository;
 import com.lms.service.CourseService;
 import com.lms.service.ImageService;
+import com.lms.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,46 +28,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private static final Logger log = LoggerFactory.getLogger(CourseServiceImpl.class);
-    private final ModelMapper modelMapper;
 //    private final SubCategoryService subCategoryService;
     private final CourseRepository courseRepository;
     private final SubCategoryRepository subCategoryRepository;
     private final ImageService imageService;
+    private final UserRepository userRepository;
+    private final CourseMapper courseMapper;
+
+
 
 
     @Override
-    public CourseDto courseToDto(Course course) {
-        return CourseDto.builder()
-                .courseName(course.getCourseName())
-                .courseDescription(course.getCourseDescription())
-                .image(course.getImage())
-//                .lessons(course.getLessons().stream().map(lesson->modelMapper.map(lesson, LessonDto.class)).toList())
-                .courseId(course.getCourseId())
-                .subCategoryId(course.getSubCategory().getSubCategoryId())
-                .build();
-
-    }
-
-    @Override
-    public Course dtoToCourse(CourseDto courseDto) {
-        Course.builder()
-                .courseName(courseDto.getCourseName())
-                .courseDescription(courseDto.getCourseDescription())
-                .image(courseDto.getImage())
-//                .lessons(courseDto.getLessons().stream().map(lesson->modelMapper.map(lesson, Lesson.class)).toList())
-                .build();
-        return modelMapper.map(courseDto, Course.class);
-    }
-
-    @Override
-    public CourseDto saveCourse(CourseDto courseDto, MultipartFile file) throws IOException {
+    public CourseDto saveCourse(CourseDto courseDto, MultipartFile file,String email) throws IOException {
         SubCategory subCategory = subCategoryRepository.findById(courseDto.getSubCategoryId()).orElseThrow(() -> new ResourceNotFoundException("SubCategory", "id", courseDto.getSubCategoryId()));
-        Course course = dtoToCourse(courseDto);
+//        Course course = dtoToCourse(courseDto);
+        Course course = courseMapper.toEntity(courseDto);
         course.setSubCategory(subCategory);
-        Image image = imageService.uploadImage(file, "course");
+        Image image = imageService.uploadImage(file, AppConstants.COURSE_IMAGE_FOLDER);
         log.info("image {}", image);
         course.setImage(image);
-        return courseToDto(courseRepository.save(course));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+        course.setInstructor(user);
+//        return courseToDto(courseRepository.save(course));
+        return courseMapper.toDto(courseRepository.save(course));
     }
 
     @Override
@@ -92,11 +78,13 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto findCourseByCourseId(long courseId) {
-        return courseToDto(courseRepository.findById(courseId).orElseThrow(()->new ResourceNotFoundException("Course","id",courseId)));
+//        return courseToDto(courseRepository.findById(courseId).orElseThrow(()->new ResourceNotFoundException("Course","id",courseId)));
+        return courseMapper.toDto(courseRepository.findById(courseId).orElseThrow(()->new ResourceNotFoundException("Course","id",courseId)));
     }
 
     @Override
     public List<CourseDto> findAll() {
-        return courseRepository.findAll().stream().map(this::courseToDto).toList();
+//        return courseRepository.findAll().stream().map(this::courseToDto).toList();
+        return courseRepository.findAll().stream().map(courseMapper::toDto).toList();
     }
 }

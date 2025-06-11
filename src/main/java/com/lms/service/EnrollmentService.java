@@ -6,9 +6,13 @@ import com.lms.model.Enrollment;
 import java.util.List;
 
 public interface EnrollmentService {
-    Enrollment enrollUserInCourse(Long userId, Long courseId);
+//    Enrollment enrollUserInCourse(Long userId, Long courseId);
 
     List<EnrollmentResponse> getEnrollmentsByUser(Long userId);
 
     boolean markEnrollmentAsCompleted(Long enrollmentId);
+
+    Enrollment enrollUserByEmail(String email, Long courseId);
+
+    List<EnrollmentResponse> getMyEnrollment(String email);
 }

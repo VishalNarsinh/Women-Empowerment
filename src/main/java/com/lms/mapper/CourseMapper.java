@@ -2,11 +2,14 @@ package com.lms.mapper;
 
 import com.lms.dto.CourseDto;
 import com.lms.model.Course;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CourseMapper {
 
+    private static final Logger log = LoggerFactory.getLogger(CourseMapper.class);
     private final LessonMapper lessonMapper;
 
     public CourseMapper(LessonMapper lessonMapper) {
@@ -14,6 +17,7 @@ public class CourseMapper {
     }
 
     public Course toEntity(CourseDto dto) {
+//        log.info("Converting CourseDto to Course");
         if (dto == null) return null;
 
         Course course = new Course();
@@ -38,6 +42,7 @@ public class CourseMapper {
     }
 
     public CourseDto toDto(Course course) {
+//        log.info("Converting Course to CourseDto");
         if (course == null) return null;
 
         CourseDto dto = new CourseDto();
