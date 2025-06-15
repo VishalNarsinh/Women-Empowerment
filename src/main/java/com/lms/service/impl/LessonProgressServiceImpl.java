@@ -31,10 +31,11 @@ public class LessonProgressServiceImpl implements LessonProgressService {
                 LessonProgress.builder()
                         .enrollment(enrollment)
                         .lesson(lesson)
+                        .completed(false)
+                        .lastWatchedSecond(0)
                         .build()
         );
         lessonProgress.setCompleted(lessonProgressDto.isCompleted());
-        lessonProgress.setProgressPercentage(lessonProgressDto.getProgressPercentage());
         lessonProgress.setLastWatchedSecond(lessonProgressDto.getLastWatchedSeconds());
         return lessonProgressRepository.save(lessonProgress);
     }

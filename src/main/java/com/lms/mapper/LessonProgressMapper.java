@@ -9,7 +9,6 @@ public class LessonProgressMapper {
                 .enrollmentId(lessonProgress.getEnrollment().getEnrollmentId())
                 .lessonId(lessonProgress.getLesson().getLessonId())
                 .completed(lessonProgress.isCompleted())
-                .progressPercentage(lessonProgress.getProgressPercentage())
                 .lastWatchedSeconds(lessonProgress.getLastWatchedSecond())
                 .build();
     }

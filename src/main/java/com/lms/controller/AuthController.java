@@ -8,7 +8,6 @@ import com.google.api.client.json.JsonFactory;
 import com.lms.dto.*;
 import com.lms.exception.ApiException;
 import com.lms.model.Image;
-import com.lms.model.Role;
 import com.lms.model.User;
 import com.lms.repository.ImageRepository;
 import com.lms.repository.UserRepository;
@@ -25,7 +24,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -116,7 +118,7 @@ public class AuthController {
                 user.setEmail(email);
                 user.setFirstName(name);
                 user.setEnabled(true);
-                user.setRole(Role.ROLE_USER);
+                user.setRole(request.getRole());
                 user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
                 String googlePicture = payload.get("picture").toString();
                 Image image = Image

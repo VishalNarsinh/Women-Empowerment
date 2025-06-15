@@ -26,8 +26,7 @@ public class LessonProgress {
 
     private boolean completed;
 
-    private int progressPercentage;
 
-    private int lastWatchedSecond;
+    private int lastWatchedSecond=0;
 
 }

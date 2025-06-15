@@ -9,6 +9,5 @@ public class LessonProgressDto {
     private long enrollmentId;
     private long lessonId;
     private boolean completed;
-    private int progressPercentage;
     private int lastWatchedSeconds;
 }

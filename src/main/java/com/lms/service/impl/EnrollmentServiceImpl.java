@@ -5,11 +5,8 @@ import com.lms.exception.ResourceNotFoundException;
 import com.lms.mapper.EnrollmentMapper;
 import com.lms.model.Course;
 import com.lms.model.Enrollment;
-import com.lms.model.LessonProgress;
 import com.lms.model.User;
-import com.lms.repository.CourseRepository;
-import com.lms.repository.EnrollmentRepository;
-import com.lms.repository.UserRepository;
+import com.lms.repository.*;
 import com.lms.service.EnrollmentService;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +18,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
+    private final LessonRepository lessonRepository;
+    private final LessonProgressRepository lessonProgressRepository;
 
-    public EnrollmentServiceImpl(EnrollmentRepository enrollmentRepository, UserRepository userRepository, CourseRepository courseRepository) {
+    public EnrollmentServiceImpl(EnrollmentRepository enrollmentRepository, UserRepository userRepository, CourseRepository courseRepository, LessonRepository lessonRepository, LessonProgressRepository lessonProgressRepository) {
         this.enrollmentRepository = enrollmentRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
+        this.lessonRepository = lessonRepository;
+        this.lessonProgressRepository = lessonProgressRepository;
     }
 
 //    @Override
@@ -87,12 +88,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public boolean markEnrollmentAsCompleted(Long enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "enrollmentId", enrollmentId));
-
-        boolean allLessonsCompleted = enrollment.getLessonProgressList().stream()
-                .allMatch(LessonProgress::isCompleted);
-
-        if (!allLessonsCompleted) return false;
-
+        if (enrollment.isCompleted()) return true;
+        long courseId = enrollment.getCourse().getCourseId();
+        long totalLesson = lessonRepository.countByCourse_CourseId(courseId);
+        long completedLesson = lessonProgressRepository.countByEnrollment_EnrollmentIdAndCompletedTrue(enrollmentId);
+        if(completedLesson != totalLesson){
+            return false;
+        }
         enrollment.setCompleted(true);
         enrollmentRepository.save(enrollment);
         return true;

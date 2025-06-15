@@ -3,7 +3,6 @@ package com.lms.service.impl;
 import com.lms.dto.RegisterRequest;
 import com.lms.dto.UserDto;
 import com.lms.exception.ResourceNotFoundException;
-import com.lms.model.Role;
 import com.lms.model.User;
 import com.lms.repository.UserRepository;
 import com.lms.service.MyUserDetailsService;
@@ -48,7 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, MyUserDetails
     @Override
     public UserDto saveUser(RegisterRequest registerRequest){
         User user = registerRequestToUser(registerRequest);
-        user.setRole(Role.ROLE_USER);
+        user.setRole(registerRequest.getRole());
         user.setEnabled(true);
         user.setPassword(bcryptPasswordEncoder.encode(user.getPassword()));
         User save = userRepository.save(user);

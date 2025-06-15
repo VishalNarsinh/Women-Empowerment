@@ -21,7 +21,7 @@ public class CourseMapper {
         if (dto == null) return null;
 
         Course course = new Course();
-        course.setCourseId(dto.getCourseId());
+//        course.setCourseId(dto.getCourseId());
         course.setCourseName(dto.getCourseName());
         course.setCourseDescription(dto.getCourseDescription());
         course.setImage(dto.getImage()); // No mapper needed
