@@ -29,22 +29,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         this.lessonProgressRepository = lessonProgressRepository;
     }
 
-//    @Override
-//    public Enrollment enrollUserInCourse(Long userId, Long courseId) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-//        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
-//        Optional<Enrollment> existing = enrollmentRepository.findByUserAndCourse(user, course);
-//        if(existing.isPresent()){
-//            return existing.get();
-//        }
-//        Enrollment enrollment = Enrollment.builder()
-//                .user(user)
-//                .course(course)
-//                .completed(false)
-//                .build();
-//        return  enrollmentRepository.save(enrollment);
-//    }
-
     @Override
     public Enrollment enrollUserByEmail(String email, Long courseId) {
         User user = userRepository.findByEmail(email)
@@ -54,7 +38,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course", "id", courseId));
 
         Optional<Enrollment> existing = enrollmentRepository.findByUserAndCourse(user, course);
-        if(existing.isPresent()){
+        if (existing.isPresent()) {
             return existing.get();
         }
 
@@ -76,6 +60,20 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         return enrollments.stream().map(EnrollmentMapper::toResponse).toList();
     }
 
+    @Override
+    public Double getCourseProgressPercentage(String email, Long enrollmentId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(() -> new ResourceNotFoundException("Enrollment", "enrollmentId", enrollmentId));
+        long courseId = enrollment.getCourse().getCourseId();
+        long totalLesson = lessonRepository.countByCourse_CourseId(courseId);
+        if (totalLesson == 0) {
+            return 0.0;
+        }
+        long completedLesson = lessonProgressRepository.countByEnrollment_EnrollmentIdAndCompletedTrue(enrollmentId);
+        double percentage = ((double) completedLesson / totalLesson) * 100.0;
+        return Math.round(percentage * 100.0) / 100.0;
+    }
+
 
     @Override
     public List<EnrollmentResponse> getEnrollmentsByUser(Long userId) {
@@ -92,7 +90,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         long courseId = enrollment.getCourse().getCourseId();
         long totalLesson = lessonRepository.countByCourse_CourseId(courseId);
         long completedLesson = lessonProgressRepository.countByEnrollment_EnrollmentIdAndCompletedTrue(enrollmentId);
-        if(completedLesson != totalLesson){
+        if (completedLesson != totalLesson) {
             return false;
         }
         enrollment.setCompleted(true);

@@ -15,4 +15,6 @@ public interface EnrollmentService {
     Enrollment enrollUserByEmail(String email, Long courseId);
 
     List<EnrollmentResponse> getMyEnrollment(String email);
+
+    Double getCourseProgressPercentage(String email,Long enrollmentId);
 }
