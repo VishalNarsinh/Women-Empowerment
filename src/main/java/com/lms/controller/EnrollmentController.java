@@ -1,5 +1,6 @@
 package com.lms.controller;
 
+import com.lms.dto.CustomMessage;
 import com.lms.dto.EnrollmentRequest;
 import com.lms.dto.EnrollmentResponse;
 import com.lms.mapper.EnrollmentMapper;
@@ -41,9 +42,9 @@ public class EnrollmentController {
     public ResponseEntity<?> markCourseAsCompleted(@PathVariable Long enrollmentId) {
         boolean completed = enrollmentService.markEnrollmentAsCompleted(enrollmentId);
         if (completed) {
-            return ResponseEntity.ok("Course marked as completed");
+            return ResponseEntity.ok(new CustomMessage("Course completed successfully", "success"));
         } else {
-            return ResponseEntity.badRequest().body("Course is not yet fully completed");
+            return ResponseEntity.badRequest().body(new CustomMessage("Course is not yet fully completed", "error"));
         }
     }
 
