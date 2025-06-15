@@ -3,9 +3,6 @@ package com.lms.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "enrollments")
 @Getter
@@ -28,6 +25,6 @@ public class Enrollment {
 
     private boolean completed;
 
-    @OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LessonProgress> lessonProgressList = new ArrayList<>();
+//    @OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<LessonProgress> lessonProgressList = new ArrayList<>();
 }
