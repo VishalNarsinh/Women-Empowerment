@@ -3,6 +3,8 @@ package com.lms.service.impl;
 import com.lms.dto.RegisterRequest;
 import com.lms.dto.UserDto;
 import com.lms.exception.ResourceNotFoundException;
+import com.lms.mapper.UserMapper;
+import com.lms.model.Role;
 import com.lms.model.User;
 import com.lms.repository.UserRepository;
 import com.lms.service.MyUserDetailsService;
@@ -13,7 +15,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,30 +32,16 @@ public class UserDetailsServiceImpl implements UserDetailsService, MyUserDetails
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username).orElseThrow(()->new ResourceNotFoundException("User", "email", username));
     }
-    @Override
-    public User registerRequestToUser(RegisterRequest registerRequest){
-        return modelMapper.map(registerRequest, User.class);
-    }
-
-    @Override
-    public UserDto userToUserDto(User user){
-        return modelMapper.map(user, UserDto.class);
-    }
-
-    @Override
-    public User userDtoToUser(UserDto userDto){
-        return modelMapper.map(userDto, User.class);
-    }
 
 
     @Override
     public UserDto saveUser(RegisterRequest registerRequest){
-        User user = registerRequestToUser(registerRequest);
+        User user = UserMapper.toEntity(registerRequest);
         user.setRole(registerRequest.getRole());
         user.setEnabled(true);
         user.setPassword(bcryptPasswordEncoder.encode(user.getPassword()));
         User save = userRepository.save(user);
-        return userToUserDto(save);
+        return UserMapper.toDto(save);
     }
 
     @Override
@@ -61,9 +51,23 @@ public class UserDetailsServiceImpl implements UserDetailsService, MyUserDetails
     }
 
     @Override
-    public UserDto updateLearnerUser(UserDto userDto, MultipartFile file) {
-        return null;
+    public List<UserDto> findAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toDto)
+                .collect(Collectors.toList());
     }
 
+    @Override
+    public List<UserDto> findUserByRole(Role role) {
+        return userRepository.findByRole(role).stream().map(UserMapper::toDto).collect(Collectors.toList());
+    }
 
+    @Override
+    public boolean toggleUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        user.setEnabled(!user.isEnabled());
+        userRepository.save(user);
+        return user.isEnabled();
+    }
 }

@@ -7,6 +7,7 @@ import com.google.api.client.googleapis.util.Utils;
 import com.google.api.client.json.JsonFactory;
 import com.lms.dto.*;
 import com.lms.exception.ApiException;
+import com.lms.mapper.UserMapper;
 import com.lms.model.Image;
 import com.lms.model.User;
 import com.lms.repository.ImageRepository;
@@ -63,7 +64,7 @@ public class AuthController {
         String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
         LoginResponse response = LoginResponse.builder()
-                .user(userDetailsService.userToUserDto((User) userDetails))
+                .user(UserMapper.toDto((User) userDetails))
                 .token(token)
                 .refreshToken(refreshToken)
                 .build();
@@ -139,7 +140,7 @@ public class AuthController {
             String jwtToken = jwtUtil.generateToken(userDetailsService.loadUserByUsername(email));
             String refreshToken = jwtUtil.generateRefreshToken(userDetailsService.loadUserByUsername(email));
             return ResponseEntity.ok(LoginResponse.builder()
-                    .user(userDetailsService.userToUserDto(user))
+                    .user(UserMapper.toDto(user))
                     .token(jwtToken)
                     .refreshToken(refreshToken)
                     .build()
