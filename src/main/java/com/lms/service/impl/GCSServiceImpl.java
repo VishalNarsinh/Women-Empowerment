@@ -7,6 +7,8 @@ import com.lms.model.Image;
 import com.lms.service.GCSService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +16,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
+@Profile("!ci")
+@Primary
 @RequiredArgsConstructor
 public class GCSServiceImpl implements GCSService {
     private final Storage storage;
