@@ -26,11 +26,12 @@ jobs:
       - name: Install openapi-to-postmanv2
         run: npm install -g openapi-to-postmanv2
 
-      - name: Install Postman CLI (direct from GitHub)
+      - name: Install Postman CLI (binary fallback)
         run: |
-          curl -Lo postman-cli.tar.gz https://github.com/postmanlabs/postman-cli/releases/latest/download/postman-cli-linux-x64.tar.gz
+          curl -Lo postman https://github.com/postmanlabs/postman-cli/releases/latest/download/postman-cli-linux-x64
+          chmod +x postman
           mkdir -p ~/.postman-cli
-          tar -xzf postman-cli.tar.gz -C ~/.postman-cli
+          mv postman ~/.postman-cli/
           echo "$HOME/.postman-cli" >> $GITHUB_PATH
 
       - name: Check Postman CLI version
@@ -64,7 +65,7 @@ jobs:
           POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
         run: |
           ~/.postman-cli/postman login --with-api-key "$POSTMAN_API_KEY"
-
+          
           ~/.postman-cli/postman collection update "$POSTMAN_COLLECTION_UID" \
             --workspace "$POSTMAN_WORKSPACE_ID" \
             -f postman-collection.json \
