@@ -30,7 +30,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y curl bash
 
       - name: Install Postman CLI via npm
-        run: npm install -g postman-cli
+        run: |
+          npm install -g postman-cli
+          echo "$(npm bin -g)" >> $GITHUB_PATH
 
       - name: Start Spring Boot App
         run: |
