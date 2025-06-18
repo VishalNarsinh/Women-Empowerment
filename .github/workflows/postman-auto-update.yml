@@ -26,6 +26,12 @@ jobs:
       - name: Install openapi-to-postmanv2
         run: npm install -g openapi-to-postmanv2
 
+      - name: Install dependencies (curl, sh, etc.)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl bash
+
+
       - name: Install Postman CLI
         run: |
           curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
