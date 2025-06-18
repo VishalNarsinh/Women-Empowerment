@@ -26,7 +26,7 @@ jobs:
       - name: Install required CLI tools
         run: |
           npm install -g openapi-to-postmanv2
-          npm install -g postman-cli
+          npm install -g @postman-cli
 
       - name: Check Postman CLI version
         run: postman --version
