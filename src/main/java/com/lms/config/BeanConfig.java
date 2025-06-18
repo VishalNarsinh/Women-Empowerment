@@ -6,6 +6,7 @@ import com.google.cloud.storage.StorageOptions;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -46,6 +47,7 @@ public class BeanConfig {
     }
 
     @Bean
+    @Profile("!ci")
     Storage storage() throws IOException {
         return StorageOptions.newBuilder()
                 .setCredentials(ServiceAccountCredentials.fromStream(new ClassPathResource("gcp-key.json").getInputStream()))
