@@ -23,10 +23,16 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install CLI tools
+      - name: Install openapi-to-postmanv2
+        run: npm install -g openapi-to-postmanv2
+
+      - name: Install curl and bash
+        run: sudo apt-get update && sudo apt-get install -y curl bash
+
+      - name: Install Postman CLI (official script)
         run: |
-          sudo apt-get update && sudo apt-get install -y curl bash
-          npm install -g openapi-to-postmanv2 postman-cli
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+          echo "$HOME/.postman" >> $GITHUB_PATH
 
       - name: Start Spring Boot App
         run: |
@@ -51,6 +57,5 @@ jobs:
 
       - name: Login to Postman CLI and Run Collection
         run: |
-          export PATH="$(npm bin -g):$PATH"
           postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
           postman collection run postman-collection.json
