@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies (CLI tools)
+      - name: Install CLI tools
         run: |
           sudo apt-get update && sudo apt-get install -y curl bash
           npm install -g openapi-to-postmanv2 postman-cli
@@ -49,12 +49,8 @@ jobs:
       - name: Convert OpenAPI to Postman collection
         run: openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
 
-      - name: Login to Postman CLI
+      - name: Login to Postman CLI and Run Collection
         run: |
           export PATH="$(npm bin -g):$PATH"
           postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-
-      - name: Run Postman Collection
-        run: |
-          export PATH="$(npm bin -g):$PATH"
           postman collection run postman-collection.json
