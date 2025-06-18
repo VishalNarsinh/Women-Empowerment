@@ -26,13 +26,14 @@ jobs:
       - name: Install openapi-to-postmanv2
         run: npm install -g openapi-to-postmanv2
 
-      - name: Install curl and bash
-        run: sudo apt-get update && sudo apt-get install -y curl bash
-
-      - name: Install Postman CLI (official script)
+      - name: Install Postman CLI (official binary)
         run: |
           curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
           echo "$HOME/.postman" >> $GITHUB_PATH
+          export PATH="$HOME/.postman:$PATH"
+
+      - name: Check Postman CLI version
+        run: postman --version
 
       - name: Start Spring Boot App
         run: |
@@ -46,19 +47,23 @@ jobs:
           done
           curl -s http://localhost:8080/actuator/health || (echo "App failed to start" && cat app.log && exit 1)
 
-      - name: Download OpenAPI Spec
-        run: |
-          mkdir -p openapi
-          curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
+      - name: Create openapi directory
+        run: mkdir -p openapi
 
-      - name: Convert OpenAPI to Postman collection
+      - name: Download OpenAPI Spec
+        run: curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
+
+      - name: Convert OpenAPI to Postman Collection
         run: openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
 
-      - name: Log in to Postman CLI
-        run: postman login --with-api-key "${{ secrets.POSTMAN_API_KEY }}"
-
-      - name: Push updated collection to Postman
+      - name: Login and Push Collection to Postman
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
         run: |
+          export PATH="$HOME/.postman:$PATH"
+          postman login --with-api-key "$POSTMAN_API_KEY"
+          
           postman collection push postman-collection.json \
-            --workspace "${{ secrets.POSTMAN_WORKSPACE_ID }}" \
-            --uid "${{ secrets.POSTMAN_COLLECTION_UID }}"
+            --workspace "$POSTMAN_WORKSPACE_ID" \
+            --name "Learning System API"
