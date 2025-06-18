@@ -30,6 +30,7 @@ jobs:
         run: |
           curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
           export PATH="$HOME/.postman:$PATH"
+          echo "$HOME/.postman" >> $GITHUB_PATH
           postman --version
 
       - name: Start Spring Boot App
@@ -53,14 +54,16 @@ jobs:
       - name: Convert OpenAPI to Postman Collection
         run: openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
 
-      - name: Login and Push Collection to Postman
+      - name: Login and Update Postman Collection
         env:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          POSTMAN_COLLECTION_UID: ${{ secrets.POSTMAN_COLLECTION_UID }}
           POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
         run: |
           export PATH="$HOME/.postman:$PATH"
           postman login --with-api-key "$POSTMAN_API_KEY"
 
-          postman collection push postman-collection.json \
+          postman collection update "$POSTMAN_COLLECTION_UID" \
             --workspace "$POSTMAN_WORKSPACE_ID" \
+            -f postman-collection.json \
             --name "Learning System API"
