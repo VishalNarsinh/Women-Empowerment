@@ -23,13 +23,14 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install required CLI tools
-        run: |
-          npm install -g openapi-to-postmanv2
-          npm install -g @postman/cli
+      - name: Install openapi-to-postmanv2
+        run: npm install -g openapi-to-postmanv2
 
-      - name: Check Postman CLI version
-        run: postman --version
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+          export PATH="$HOME/.postman:$PATH"
+          postman --version
 
       - name: Start Spring Boot App
         run: |
@@ -43,7 +44,7 @@ jobs:
           done
           curl -s http://localhost:8080/actuator/health || (echo "App failed to start" && cat app.log && exit 1)
 
-      - name: Create openapi directory
+      - name: Create OpenAPI directory
         run: mkdir -p openapi
 
       - name: Download OpenAPI Spec
@@ -57,7 +58,9 @@ jobs:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
           POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
         run: |
+          export PATH="$HOME/.postman:$PATH"
           postman login --with-api-key "$POSTMAN_API_KEY"
+
           postman collection push postman-collection.json \
             --workspace "$POSTMAN_WORKSPACE_ID" \
             --name "Learning System API"
