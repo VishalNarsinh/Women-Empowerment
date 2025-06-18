@@ -29,10 +29,11 @@ jobs:
       - name: Install curl and bash
         run: sudo apt-get update && sudo apt-get install -y curl bash
 
-      - name: Install Postman CLI via npm
-        run: |
-          npm install -g postman-cli
-          echo "$(npm bin -g)" >> $GITHUB_PATH
+      - name: Install Postman CLI
+        run: npm install -g postman-cli
+
+      - name: Add Postman CLI to PATH
+        run: echo "$(npm bin -g)" >> $GITHUB_PATH
 
       - name: Start Spring Boot App
         run: |
@@ -50,12 +51,10 @@ jobs:
         run: mkdir -p openapi
 
       - name: Download OpenAPI Spec
-        run: |
-          curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
+        run: curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
 
       - name: Convert OpenAPI to Postman collection
-        run: |
-          openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
+        run: openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
 
       - name: Login to Postman CLI
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
