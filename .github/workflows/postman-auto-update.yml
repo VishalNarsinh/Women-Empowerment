@@ -59,10 +59,13 @@ jobs:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
         run: postman login --with-api-key "$POSTMAN_API_KEY"
 
-      - name: Push Postman Collection
+      - name: Apply Postman Collection
         env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
           POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
         run: |
-          postman collection push postman-collection.json \
+          postman login --with-api-key "$POSTMAN_API_KEY"
+          postman collection apply postman-collection.json \
             --workspace "$POSTMAN_WORKSPACE_ID" \
             --name "Learning System API"
+      
