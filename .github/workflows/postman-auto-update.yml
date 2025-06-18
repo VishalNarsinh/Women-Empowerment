@@ -2,7 +2,7 @@ name: Auto Update Postman Collection
 
 on:
   push:
-    branches: [ main ]  # change this if your branch name is different
+    branches: [ main ]
 
 jobs:
   update-postman:
@@ -21,12 +21,12 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x ./mvnw
 
-      - name: Build Spring Boot app using 'ci' profile
-        run: ./mvnw clean install -DskipTests -Dspring.profiles.active=ci
+      - name: Build Spring Boot app
+        run: ./mvnw clean install -DskipTests
 
-      - name: Start Spring Boot app (CI profile)
+      - name: Start Spring Boot app
         run: |
-          nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=ci &
+          nohup ./mvnw spring-boot:run --spring.profiles.active=ci &
           sleep 30  # wait for the app to start
 
       - name: Fetch OpenAPI spec from SpringDoc
@@ -37,13 +37,13 @@ jobs:
       - name: Install Postman CLI
         run: |
           curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+          echo "$HOME/.postman" >> $GITHUB_PATH
 
       - name: Authenticate Postman CLI
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
-      - name: Import OpenAPI to Postman
-        run: |
-          postman collection import openapi/openapi.json \
-            --workspace ${{ secrets.POSTMAN_WORKSPACE_ID }} \
-            --api-id ${{ secrets.POSTMAN_COLLECTION_UID }} \
-            --update
+      - name: Convert OpenAPI to Postman Collection
+        run: postman openapi2postman --input openapi/openapi.json --output postman-collection.json
+
+      - name: (Optional) Run Postman Collection
+        run: postman collection run postman-collection.json
