@@ -2,7 +2,7 @@ name: Auto Update Postman Collection
 
 on:
   push:
-    branches: [ main ]  # change this if your branch is different
+    branches: [ main ]  # change this if your branch name is different
 
 jobs:
   update-postman:
@@ -21,13 +21,12 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x ./mvnw
 
+      - name: Build Spring Boot app using 'ci' profile
+        run: ./mvnw clean install -DskipTests -Dspring.profiles.active=ci
 
-      - name: Build Spring Boot app
-        run: ./mvnw clean install -DskipTests
-
-      - name: Start Spring Boot app
+      - name: Start Spring Boot app (CI profile)
         run: |
-          nohup ./mvnw spring-boot:run &
+          nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=ci &
           sleep 30  # wait for the app to start
 
       - name: Fetch OpenAPI spec from SpringDoc
