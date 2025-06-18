@@ -26,34 +26,28 @@ jobs:
       - name: Install openapi-to-postmanv2
         run: npm install -g openapi-to-postmanv2
 
-      - name: Install dependencies (curl, sh, etc.)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl bash
-
+      - name: Install curl and bash
+        run: sudo apt-get update && sudo apt-get install -y curl bash
 
       - name: Install Postman CLI
         run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-        env:
-          PATH: $HOME/.postman:$PATH
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | bash
+          echo "$HOME/.postman" >> $GITHUB_PATH
 
       - name: Start Spring Boot App
         run: |
           chmod +x ./mvnw
           nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=ci &
-          sleep 25 # give enough time for server to start
+          sleep 25
 
       - name: Create openapi directory
         run: mkdir -p openapi
 
       - name: Download OpenAPI Spec
-        run: |
-          curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
+        run: curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
 
       - name: Convert OpenAPI to Postman collection
-        run: |
-          openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
+        run: openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
 
       - name: Login to Postman CLI
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
