@@ -26,29 +26,26 @@ jobs:
       - name: Install openapi-to-postmanv2
         run: npm install -g openapi-to-postmanv2
 
-      - name: Verify environment tools
-        run: |
-          which curl || echo "curl is missing"
-          which bash || echo "bash is missing"
-
       - name: Install curl and bash
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y curl bash
-          which curl
-          which bash
+        run: sudo apt-get update && sudo apt-get install -y curl bash
 
       - name: Install Postman CLI
         run: |
-          bash -c "$(curl -sL https://dl-cli.pstmn.io/install/linux64.sh)"
-          echo "$HOME/.postman/bin" >> $GITHUB_PATH
-          which postman
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | bash
+        env:
+          PATH: $HOME/.postman:$PATH
 
       - name: Start Spring Boot App
         run: |
           chmod +x ./mvnw
-          nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=ci &
-          sleep 25
+          nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=ci > app.log 2>&1 &
+          echo "Waiting for app to start..."
+          for i in {1..30}; do
+            curl -s http://localhost:8080/actuator/health && break
+            echo "Still waiting ($i)..."
+            sleep 3
+          done
+          curl -s http://localhost:8080/actuator/health || (echo "App failed to start" && cat app.log && exit 1)
 
       - name: Create openapi directory
         run: mkdir -p openapi
