@@ -26,12 +26,15 @@ jobs:
       - name: Install openapi-to-postmanv2
         run: npm install -g openapi-to-postmanv2
 
-      - name: Install Postman CLI
+      - name: Install Postman CLI (direct from GitHub)
         run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-          export PATH="$HOME/.postman:$PATH"
-          echo "$HOME/.postman" >> $GITHUB_PATH
-          postman --version
+          curl -Lo postman-cli.tar.gz https://github.com/postmanlabs/postman-cli/releases/latest/download/postman-cli-linux-x64.tar.gz
+          mkdir -p ~/.postman-cli
+          tar -xzf postman-cli.tar.gz -C ~/.postman-cli
+          echo "$HOME/.postman-cli" >> $GITHUB_PATH
+
+      - name: Check Postman CLI version
+        run: ~/.postman-cli/postman --version
 
       - name: Start Spring Boot App
         run: |
@@ -45,7 +48,7 @@ jobs:
           done
           curl -s http://localhost:8080/actuator/health || (echo "App failed to start" && cat app.log && exit 1)
 
-      - name: Create OpenAPI directory
+      - name: Create openapi directory
         run: mkdir -p openapi
 
       - name: Download OpenAPI Spec
@@ -60,10 +63,9 @@ jobs:
           POSTMAN_COLLECTION_UID: ${{ secrets.POSTMAN_COLLECTION_UID }}
           POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
         run: |
-          export PATH="$HOME/.postman:$PATH"
-          postman login --with-api-key "$POSTMAN_API_KEY"
+          ~/.postman-cli/postman login --with-api-key "$POSTMAN_API_KEY"
 
-          postman collection update "$POSTMAN_COLLECTION_UID" \
+          ~/.postman-cli/postman collection update "$POSTMAN_COLLECTION_UID" \
             --workspace "$POSTMAN_WORKSPACE_ID" \
             -f postman-collection.json \
             --name "Learning System API"
