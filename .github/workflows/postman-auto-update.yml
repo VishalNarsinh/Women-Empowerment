@@ -29,11 +29,8 @@ jobs:
       - name: Install curl and bash
         run: sudo apt-get update && sudo apt-get install -y curl bash
 
-      - name: Install Postman CLI
-        run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | bash
-        env:
-          PATH: $HOME/.postman:$PATH
+      - name: Install Postman CLI via npm
+        run: npm install -g postman-cli
 
       - name: Start Spring Boot App
         run: |
