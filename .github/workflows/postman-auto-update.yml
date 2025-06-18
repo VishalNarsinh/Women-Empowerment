@@ -26,16 +26,13 @@ jobs:
       - name: Install openapi-to-postmanv2
         run: npm install -g openapi-to-postmanv2
 
-      - name: Install Postman CLI (binary fallback)
+      - name: Install Postman CLI (v1+)
         run: |
-          curl -Lo postman https://github.com/postmanlabs/postman-cli/releases/latest/download/postman-cli-linux-x64
-          chmod +x postman
-          mkdir -p ~/.postman-cli
-          mv postman ~/.postman-cli/
-          echo "$HOME/.postman-cli" >> $GITHUB_PATH
+          curl -fsSL "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+          echo "$HOME/.postman" >> $GITHUB_PATH
 
-      - name: Check Postman CLI version
-        run: ~/.postman-cli/postman --version
+      - name: Verify Postman CLI version
+        run: postman --version
 
       - name: Start Spring Boot App
         run: |
@@ -49,24 +46,23 @@ jobs:
           done
           curl -s http://localhost:8080/actuator/health || (echo "App failed to start" && cat app.log && exit 1)
 
-      - name: Create openapi directory
-        run: mkdir -p openapi
-
       - name: Download OpenAPI Spec
-        run: curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
+        run: |
+          mkdir -p openapi
+          curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
 
       - name: Convert OpenAPI to Postman Collection
         run: openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
 
-      - name: Login and Update Postman Collection
+      - name: Login to Postman CLI
         env:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
-          POSTMAN_COLLECTION_UID: ${{ secrets.POSTMAN_COLLECTION_UID }}
+        run: postman login --with-api-key "$POSTMAN_API_KEY"
+
+      - name: Push Postman Collection
+        env:
           POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
         run: |
-          ~/.postman-cli/postman login --with-api-key "$POSTMAN_API_KEY"
-          
-          ~/.postman-cli/postman collection update "$POSTMAN_COLLECTION_UID" \
+          postman collection push postman-collection.json \
             --workspace "$POSTMAN_WORKSPACE_ID" \
-            -f postman-collection.json \
             --name "Learning System API"
