@@ -1,49 +1,56 @@
-name: Auto Update Postman Collection
+name: Postman Auto Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  update-postman:
+  postman-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Java 21
+      - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
           java-version: '21'
+          distribution: 'temurin'
 
-      - name: Make mvnw executable
-        run: chmod +x ./mvnw
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: Build Spring Boot app
-        run: ./mvnw clean install -DskipTests
-
-      - name: Start Spring Boot app
-        run: |
-          nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=ci &
-          sleep 60
-
-      - name: Fetch OpenAPI spec from SpringDoc
-        run: |
-          mkdir -p openapi
-          curl http://localhost:8080/v3/api-docs -o openapi/openapi.json
+      - name: Install openapi-to-postmanv2
+        run: npm install -g openapi-to-postmanv2
 
       - name: Install Postman CLI
         run: |
           curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-          echo "$HOME/.postman" >> $GITHUB_PATH
+        env:
+          PATH: $HOME/.postman:$PATH
 
-      - name: Authenticate Postman CLI
+      - name: Start Spring Boot App
+        run: |
+          chmod +x ./mvnw
+          nohup ./mvnw spring-boot:run -Dspring-boot.run.profiles=ci &
+          sleep 25 # give enough time for server to start
+
+      - name: Create openapi directory
+        run: mkdir -p openapi
+
+      - name: Download OpenAPI Spec
+        run: |
+          curl --fail http://localhost:8080/v3/api-docs -o openapi/openapi.json
+
+      - name: Convert OpenAPI to Postman collection
+        run: |
+          openapi2postmanv2 -s openapi/openapi.json -o postman-collection.json -p
+
+      - name: Login to Postman CLI
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
-      - name: Convert OpenAPI to Postman Collection
-        run: postman openapi2postman --input openapi/openapi.json --output postman-collection.json
-
-      - name: (Optional) Run Postman Collection
+      - name: Run Postman Collection
         run: postman collection run postman-collection.json
