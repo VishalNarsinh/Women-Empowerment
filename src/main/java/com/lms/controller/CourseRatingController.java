@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/ratings")
+@RequestMapping("/api/v1/ratings")
 public class CourseRatingController {
 
     private final CourseRatingService courseRatingService;

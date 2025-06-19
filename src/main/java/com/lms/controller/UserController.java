@@ -1,5 +1,6 @@
 package com.lms.controller;
 
+import com.lms.dto.CustomMessage;
 import com.lms.model.Role;
 import com.lms.service.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,11 @@ public class UserController {
         return ResponseEntity.ok(myUserDetailsService.toggleUser(userId));
     }
 
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        myUserDetailsService.deleteUser(userId);
+        return ResponseEntity.ok(new CustomMessage("User deleted successfully", "success"));
+    }
 
 }
